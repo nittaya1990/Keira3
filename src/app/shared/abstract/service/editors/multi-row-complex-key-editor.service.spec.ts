@@ -1,17 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { instance } from 'ts-mockito';
+import { MockEntity, MockHandlerService, MockMultiRowComplexKeyEditorService } from '@keira-testing/mock-services';
+import { MockedMysqlQueryService, MockedToastrService } from '@keira-testing/mocks';
+import { TableRow } from '@keira-types/general';
+import { QueryError } from 'mysql2';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
-import { MysqlError } from 'mysql';
+import { instance } from 'ts-mockito';
+import { MysqlQueryService } from '../../../services/mysql-query.service';
+import { MultiRowComplexKeyEditorService } from './multi-row-complex-key-editor.service';
 
 import Spy = jasmine.Spy;
-
-import { MultiRowComplexKeyEditorService } from './multi-row-complex-key-editor.service';
-import { MysqlQueryService } from '../../../services/mysql-query.service';
-import { MockedMysqlQueryService, MockedToastrService } from '@keira-testing/mocks';
-import { MockEntity, MockMultiRowComplexKeyEditorService, MockHandlerService } from '@keira-testing/mock-services';
-import { TableRow } from '@keira-types/general';
 
 describe('MultiRowComplexKeyEditorService', () => {
   let service: MultiRowComplexKeyEditorService<MockEntity>;
@@ -81,7 +80,7 @@ describe('MultiRowComplexKeyEditorService', () => {
 
   it('reloadEntity should correctly work', () => {
     spyOn<any>(service, 'onReloadSuccessful');
-    const error = { code: 'mock error', errno: 1234 } as MysqlError;
+    const error = { code: 'mock error', errno: 1234 } as QueryError;
     const selectQuerySpy: Spy = spyOn<any>(service, 'selectQuery').and.returnValue(of({ mock: 'data' }));
 
     service['reloadEntity']();

@@ -1,10 +1,9 @@
 import { Component, Input } from '@angular/core';
-
+import { MultiRowEditorService } from '@keira-abstract/service/editors/multi-row-editor.service';
+import { DTCFG } from '@keira-config/datatable.config';
 import { LOOT_MODE } from '@keira-constants/flags/loot-mode';
 import { WIKI_BASE_URL } from '@keira-constants/general';
 import { LootTemplate } from '@keira-types/loot-template.type';
-import { MultiRowEditorService } from '@keira-abstract/service/editors/multi-row-editor.service';
-import { DTCFG } from '@keira-config/datatable.config';
 
 @Component({
   selector: 'keira-loot-editor',
@@ -14,8 +13,8 @@ import { DTCFG } from '@keira-config/datatable.config';
 export class LootEditorComponent<T extends LootTemplate> {
   @Input() editorService: MultiRowEditorService<T>;
 
-  public readonly LOOT_MODE = LOOT_MODE;
-  public readonly DTCFG = DTCFG;
+  readonly LOOT_MODE = LOOT_MODE;
+  readonly DTCFG = DTCFG;
 
   public get docUrl(): string {
     // all loot tables have the same documentation page

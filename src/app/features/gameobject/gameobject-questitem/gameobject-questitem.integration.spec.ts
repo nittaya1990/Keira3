@@ -1,22 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { GameobjectQuestitem } from '@keira-types/gameobject-questitem.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { GameobjectHandlerService } from '../gameobject-handler.service';
+import { SaiGameobjectHandlerService } from '../sai-gameobject-handler.service';
 import { GameobjectQuestitemComponent } from './gameobject-questitem.component';
 import { GameobjectQuestitemModule } from './gameobject-questitem.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { GameobjectQuestitem } from '@keira-types/gameobject-questitem.type';
-import { GameobjectHandlerService } from '../gameobject-handler.service';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
-import { SaiGameobjectHandlerService } from '../sai-gameobject-handler.service';
+import Spy = jasmine.Spy;
 
 class GameobjectQuestitemPage extends MultiRowEditorPageObject<GameobjectQuestitemComponent> {}
 
 describe('GameobjectQuestitem integration tests', () => {
-  let component: GameobjectQuestitemComponent;
   let fixture: ComponentFixture<GameobjectQuestitemComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -33,14 +32,12 @@ describe('GameobjectQuestitem integration tests', () => {
   originalRow1.Idx = 1;
   originalRow2.Idx = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), GameobjectQuestitemModule, RouterTestingModule],
-        providers: [GameobjectHandlerService, SaiGameobjectHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), GameobjectQuestitemModule, RouterTestingModule, TranslateTestingModule],
+      providers: [GameobjectHandlerService, SaiGameobjectHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     handlerService = TestBed.inject(GameobjectHandlerService);
@@ -54,7 +51,6 @@ describe('GameobjectQuestitem integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalRow0, originalRow1, originalRow2]));
 
     fixture = TestBed.createComponent(GameobjectQuestitemComponent);
-    component = fixture.componentInstance;
     page = new GameobjectQuestitemPage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();

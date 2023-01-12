@@ -1,31 +1,32 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
-
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { PageObject } from '@keira-testing/page-object';
+import { QueryError } from 'mysql2';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ClipboardService } from 'ngx-clipboard';
+import { of, throwError } from 'rxjs';
 import { SqlEditorComponent } from './sql-editor.component';
 import { SqlEditorModule } from './sql-editor.module';
-import { PageObject } from '@keira-testing/page-object';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { of, throwError } from 'rxjs';
-import { ClipboardService } from 'ngx-clipboard';
-import { MysqlError } from 'mysql';
+
 import Spy = jasmine.Spy;
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 export class SqlEditorPage extends PageObject<SqlEditorComponent> {
   readonly DT = 'ngx-datatable';
 
-  get affectedRows() {
+  get affectedRows(): HTMLTextAreaElement {
     return this.query<HTMLTextAreaElement>('#affected-rows-box');
   }
-  get code() {
+  get code(): HTMLTextAreaElement {
     return this.query<HTMLTextAreaElement>('textarea#code');
   }
-  get copyBtn() {
+  get copyBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#copy-btn');
   }
-  get executeBtn() {
+  get executeBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#execute-btn');
   }
-  get errorElement() {
+  get errorElement(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('keira-query-error');
   }
 }
@@ -36,13 +37,11 @@ describe('SqlEditorComponent', () => {
     { col1: 'y1', col2: 'y2', col3: 'y3' },
   ];
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [TooltipModule.forRoot(), SqlEditorModule],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [TooltipModule.forRoot(), SqlEditorModule, TranslateTestingModule],
+    }).compileComponents();
+  }));
 
   const setup = () => {
     const fixture = TestBed.createComponent(SqlEditorComponent);
@@ -87,15 +86,15 @@ describe('SqlEditorComponent', () => {
     const error = {
       code: 'some error happened',
       errno: 1000,
-      sqlMessage: 'some SQL error message',
+      stack: 'some SQL error message',
       sqlState: 'some SQL state',
-    } as MysqlError;
+    } as QueryError;
     (mysqlQueryService.query as Spy).and.returnValue(throwError(error));
 
     page.clickElement(page.executeBtn);
 
     expect(page.errorElement.innerHTML).toContain(error.code);
-    expect(page.errorElement.innerHTML).toContain(error.sqlMessage);
+    expect(page.errorElement.innerHTML).toContain(error.stack);
     expect(page.errorElement.innerHTML).toContain(error.sqlState);
     expect(page.errorElement.innerHTML).toContain(`${error.errno}`);
   });

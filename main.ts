@@ -3,9 +3,6 @@ import * as path from 'path';
 import * as url from 'url';
 import * as settings from 'electron-settings';
 
-// Initialize remote module
-require('@electron/remote/main').initialize();
-
 let win, serve;
 const args = process.argv.slice(1);
 serve = args.some((val) => val === '--serve');
@@ -28,7 +25,6 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false, // TODO: change this once Spectron supports it
-      enableRemoteModule: true, // TODO: change this once Spectron supports it
     },
     icon: nativeImage.createFromPath('src/assets/img/ac.png'),
   });
@@ -61,17 +57,6 @@ function createWindow() {
       pos_x: bounds.x,
       pos_y: bounds.y,
     });
-    if (!process.env.RUNNING_IN_SPECTRON) {
-      const choice = require('electron').dialog.showMessageBoxSync(this, {
-        type: 'question',
-        buttons: ['Yes', 'No'],
-        title: 'Confirm',
-        message: 'Are you sure you want to quit?',
-      });
-      if (choice === 1) {
-        e.preventDefault();
-      }
-    }
   });
 
   // Emitted when the window is closed.
@@ -205,6 +190,11 @@ try {
 
     win.webContents.on('context-menu', function () {
       ctxMenu.popup(win);
+    });
+
+    win.webContents.setWindowOpenHandler(({ url }) => {
+      shell.openExternal(url);
+      return { action: 'deny' };
     });
   });
 

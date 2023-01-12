@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { RouterTestingModule } from '@angular/router/testing';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { SelectQuestComponent } from './select-quest.component';
-import { SelectQuestService } from './select-quest.service';
-import { SelectQuestModule } from './select-quest.module';
-import { QuestTemplate } from '@keira-types/quest-template.type';
 import { SelectPageObject } from '@keira-testing/select-page-object';
+import { QuestTemplate } from '@keira-types/quest-template.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { QuestHandlerService } from '../quest-handler.service';
+import { SelectQuestComponent } from './select-quest.component';
+import { SelectQuestModule } from './select-quest.module';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class SelectQuestComponentPage extends SelectPageObject<SelectQuestComponent> {
   ID_FIELD = 'ID';
@@ -21,7 +20,6 @@ class SelectQuestComponentPage extends SelectPageObject<SelectQuestComponent> {
 describe('SelectQuest integration tests', () => {
   let component: SelectQuestComponent;
   let fixture: ComponentFixture<SelectQuestComponent>;
-  let selectService: SelectQuestService;
   let page: SelectQuestComponentPage;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -29,21 +27,17 @@ describe('SelectQuest integration tests', () => {
 
   const value = 1200;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SelectQuestModule, RouterTestingModule],
-        providers: [QuestHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SelectQuestModule, RouterTestingModule, TranslateTestingModule],
+      providers: [QuestHandlerService],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     navigateSpy = spyOn(TestBed.inject(Router), 'navigate');
     queryService = TestBed.inject(MysqlQueryService);
     querySpy = spyOn(queryService, 'query').and.returnValue(of([{ max: 1 }]));
-
-    selectService = TestBed.inject(SelectQuestService);
 
     fixture = TestBed.createComponent(SelectQuestComponent);
     page = new SelectQuestComponentPage(fixture);
@@ -52,52 +46,43 @@ describe('SelectQuest integration tests', () => {
     fixture.detectChanges();
   });
 
-  it(
-    'should correctly initialise',
-    waitForAsync(async () => {
-      await fixture.whenStable();
-      expect(page.createInput.value).toEqual(`${component.customStartingId}`);
-      page.expectNewEntityFree();
-      expect(querySpy).toHaveBeenCalledWith('SELECT MAX(ID) AS max FROM quest_template;');
-      expect(page.queryWrapper.innerText).toContain('SELECT * FROM `quest_template` LIMIT 50');
-    }),
-  );
+  it('should correctly initialise', waitForAsync(async () => {
+    await fixture.whenStable();
+    expect(page.createInput.value).toEqual(`${component.customStartingId}`);
+    page.expectNewEntityFree();
+    expect(querySpy).toHaveBeenCalledWith('SELECT MAX(ID) AS max FROM quest_template;');
+    expect(page.queryWrapper.innerText).toContain('SELECT * FROM `quest_template` LIMIT 50');
+  }));
 
-  it(
-    'should correctly behave when inserting and selecting free id',
-    waitForAsync(async () => {
-      await fixture.whenStable();
-      querySpy.calls.reset();
-      querySpy.and.returnValue(of([]));
+  it('should correctly behave when inserting and selecting free id', waitForAsync(async () => {
+    await fixture.whenStable();
+    querySpy.calls.reset();
+    querySpy.and.returnValue(of([]));
 
-      page.setInputValue(page.createInput, value);
+    page.setInputValue(page.createInput, value);
 
-      expect(querySpy).toHaveBeenCalledTimes(1);
-      expect(querySpy).toHaveBeenCalledWith(`SELECT * FROM \`quest_template\` WHERE (ID = ${value})`);
-      page.expectNewEntityFree();
+    expect(querySpy).toHaveBeenCalledTimes(1);
+    expect(querySpy).toHaveBeenCalledWith(`SELECT * FROM \`quest_template\` WHERE (ID = ${value})`);
+    page.expectNewEntityFree();
 
-      page.clickElement(page.selectNewBtn);
+    page.clickElement(page.selectNewBtn);
 
-      expect(navigateSpy).toHaveBeenCalledTimes(1);
-      expect(navigateSpy).toHaveBeenCalledWith(['quest/quest-template']);
-      page.expectTopBarCreatingNew(value);
-    }),
-  );
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
+    expect(navigateSpy).toHaveBeenCalledWith(['quest/quest-template']);
+    page.expectTopBarCreatingNew(value);
+  }));
 
-  it(
-    'should correctly behave when inserting an existing entity',
-    waitForAsync(async () => {
-      await fixture.whenStable();
-      querySpy.calls.reset();
-      querySpy.and.returnValue(of(['mock value']));
+  it('should correctly behave when inserting an existing entity', waitForAsync(async () => {
+    await fixture.whenStable();
+    querySpy.calls.reset();
+    querySpy.and.returnValue(of(['mock value']));
 
-      page.setInputValue(page.createInput, value);
+    page.setInputValue(page.createInput, value);
 
-      expect(querySpy).toHaveBeenCalledTimes(1);
-      expect(querySpy).toHaveBeenCalledWith(`SELECT * FROM \`quest_template\` WHERE (ID = ${value})`);
-      page.expectEntityAlreadyInUse();
-    }),
-  );
+    expect(querySpy).toHaveBeenCalledTimes(1);
+    expect(querySpy).toHaveBeenCalledWith(`SELECT * FROM \`quest_template\` WHERE (ID = ${value})`);
+    page.expectEntityAlreadyInUse();
+  }));
 
   for (const { testId, id, name, limit, expectedQuery } of [
     {

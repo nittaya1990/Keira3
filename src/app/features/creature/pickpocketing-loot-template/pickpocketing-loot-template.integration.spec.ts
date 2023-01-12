@@ -1,23 +1,22 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { PickpocketingLootTemplate } from '@keira-types/pickpocketing-loot-template.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { CreatureHandlerService } from '../creature-handler.service';
+import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
 import { PickpocketingLootTemplateComponent } from './pickpocketing-loot-template.component';
 import { PickpocketingLootTemplateModule } from './pickpocketing-loot-template.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { PickpocketingLootTemplate } from '@keira-types/pickpocketing-loot-template.type';
-import { CreatureHandlerService } from '../creature-handler.service';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
 import { PickpocketingLootTemplateService } from './pickpocketing-loot-template.service';
-import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class PickpocketingLootTemplatePage extends MultiRowEditorPageObject<PickpocketingLootTemplateComponent> {}
 
 describe('PickpocketingLootTemplate integration tests', () => {
-  let component: PickpocketingLootTemplateComponent;
   let fixture: ComponentFixture<PickpocketingLootTemplateComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -34,14 +33,18 @@ describe('PickpocketingLootTemplate integration tests', () => {
   originalRow1.Item = 1;
   originalRow2.Item = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), PickpocketingLootTemplateModule, RouterTestingModule],
-        providers: [CreatureHandlerService, SaiCreatureHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        ToastrModule.forRoot(),
+        ModalModule.forRoot(),
+        PickpocketingLootTemplateModule,
+        RouterTestingModule,
+        TranslateTestingModule,
+      ],
+      providers: [CreatureHandlerService, SaiCreatureHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean, lootId = id) {
     spyOn(TestBed.inject(PickpocketingLootTemplateService), 'getLootId').and.returnValue(of([{ lootId }]));
@@ -57,7 +60,6 @@ describe('PickpocketingLootTemplate integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalRow0, originalRow1, originalRow2]));
 
     fixture = TestBed.createComponent(PickpocketingLootTemplateComponent);
-    component = fixture.componentInstance;
     page = new PickpocketingLootTemplatePage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();

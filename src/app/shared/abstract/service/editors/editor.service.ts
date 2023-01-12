@@ -1,12 +1,12 @@
-import { FormControl, FormGroup } from 'ngx-typesafe-forms';
-import { Observable } from 'rxjs';
-import { MysqlError } from 'mysql';
+import { QueryError } from 'mysql2';
 import { ToastrService } from 'ngx-toastr';
-
+import { Observable } from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ModelForm } from '@keira-shared/utils/helpers';
 import { Class, StringKeys, TableRow } from '@keira-types/general';
 import { MysqlQueryService } from '../../../services/mysql-query.service';
-import { HandlerService } from '../handlers/handler.service';
 import { SubscriptionHandler } from '../../../utils/subscription-handler/subscription-handler';
+import { HandlerService } from '../handlers/handler.service';
 
 export abstract class EditorService<T extends TableRow> extends SubscriptionHandler {
   protected _loading = false;
@@ -15,8 +15,8 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
   protected _diffQuery: string;
   protected _fullQuery: string;
   protected _isNew = false;
-  protected _form: FormGroup<T>;
-  protected _error: MysqlError;
+  protected _form: FormGroup<ModelForm<T>>;
+  protected _error: QueryError;
 
   get loadedEntityId(): string {
     return typeof this._loadedEntityId === 'object' ? JSON.stringify(this._loadedEntityId) : String(this._loadedEntityId);
@@ -36,10 +36,10 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
   get isNew(): boolean {
     return this._isNew;
   }
-  get form(): FormGroup<T> {
+  get form(): FormGroup<ModelForm<T>> {
     return this._form;
   }
-  get error(): MysqlError {
+  get error(): QueryError {
     return this._error;
   }
 
@@ -48,7 +48,7 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
     protected _entityTable: string,
     protected _entityIdField: string,
     protected handlerService: HandlerService<T>,
-    public readonly queryService: MysqlQueryService,
+    readonly queryService: MysqlQueryService,
     protected toastrService: ToastrService,
   ) {
     super();
@@ -63,7 +63,7 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
   protected abstract updateFullQuery();
   protected abstract onReloadSuccessful(data: T[], id: string | number);
 
-  protected updateEditorStatus() {
+  protected updateEditorStatus(): void {
     this.handlerService.statusMap[this._entityTable] = !!this._diffQuery;
   }
 
@@ -72,12 +72,12 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
     return Object.getOwnPropertyNames(tmpInstance) as StringKeys<T>[];
   }
 
-  protected disableEntityIdField() {
+  protected disableEntityIdField(): void {
     this._form.controls[this._entityIdField].disable();
   }
 
-  protected initForm() {
-    this._form = new FormGroup<T>({} as any);
+  protected initForm(): void {
+    this._form = new FormGroup<ModelForm<T>>({} as any);
 
     for (const field of this.fields) {
       this._form.addControl(field, new FormControl());
@@ -98,7 +98,7 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
           this.onReloadSuccessful(data, id);
           this._loading = false;
         },
-        error: (error: MysqlError) => {
+        error: (error: QueryError) => {
           this._error = error;
           this._loading = false;
         },
@@ -106,7 +106,7 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
     );
   }
 
-  protected reset() {
+  protected reset(): void {
     this._form.reset();
     this._fullQuery = '';
     this._diffQuery = '';
@@ -119,11 +119,11 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
     this.reloadEntity(id);
   }
 
-  reloadSameEntity() {
+  reloadSameEntity(): void {
     this.reload(this.loadedEntityId);
   }
 
-  save(query: string) {
+  save(query: string): void {
     if (!query) {
       return;
     }
@@ -138,7 +138,7 @@ export abstract class EditorService<T extends TableRow> extends SubscriptionHand
           this.toastrService.success('Query executed successfully', 'Success');
           this._loading = false;
         },
-        error: (error: MysqlError) => {
+        error: (error: QueryError) => {
           this._error = error;
           this.toastrService.error('Error when executing the query!', 'Query error');
           this._loading = false;

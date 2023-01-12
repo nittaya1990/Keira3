@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-
 import { ModalConfirmComponent } from '@keira-shared/modules/modal-confirm/modal-confirm.component';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { LocationService } from '@keira-shared/services/location.service';
 import { SubscriptionHandler } from '@keira-shared/utils/subscription-handler/subscription-handler';
+import { TranslateService } from '@ngx-translate/core';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'keira-logout-btn',
@@ -12,14 +12,14 @@ import { SubscriptionHandler } from '@keira-shared/utils/subscription-handler/su
 })
 export class LogoutBtnComponent extends SubscriptionHandler {
   public modalRef: BsModalRef;
-  constructor(private modalService: BsModalService, private locationService: LocationService) {
+  constructor(private modalService: BsModalService, private locationService: LocationService, private translateService: TranslateService) {
     super();
   }
 
-  openModalConfirm() {
+  openModalConfirm(): void {
     const initialState = {
-      title: 'Logout',
-      content: 'Are you sure you want to logout?',
+      title: this.translateService.instant('SIDEBAR.DISCONNECT'),
+      content: this.translateService.instant('SIDEBAR.MODAL_DISCONNECT'),
     };
 
     this.modalRef = this.modalService.show(ModalConfirmComponent, { initialState });
@@ -33,7 +33,7 @@ export class LogoutBtnComponent extends SubscriptionHandler {
     );
   }
 
-  logout() {
+  logout(): void {
     this.locationService.reload();
   }
 }

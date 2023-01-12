@@ -32,6 +32,8 @@ export class CreatureTemplate extends TableRow {
   npcflag: number = 0;
   speed_walk: number = 1;
   speed_run: number = 1.14286;
+  speed_swim: number = 1;
+  speed_flight: number = 1;
   detection_range: number = 1;
   scale: number = 1;
   rank: number = 0;
@@ -61,7 +63,6 @@ export class CreatureTemplate extends TableRow {
   maxgold: number = 0;
   AIName: string = '';
   MovementType: number = 0;
-  InhabitType: number = 3;
   HoverHeight: number = 1;
   HealthModifier: number = 1;
   ManaModifier: number = 1;

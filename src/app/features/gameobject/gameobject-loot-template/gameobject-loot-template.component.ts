@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MysqlError } from 'mysql';
-
-import { GameobjectHandlerService } from '../gameobject-handler.service';
-import { GameobjectLootTemplate } from '@keira-types/gameobject-loot-template.type';
-import { GameobjectLootTemplateService } from './gameobject-loot-template.service';
 import { LootTemplateIdComponent } from '@keira-abstract/components/editors/loot-template/loot-template-id.component';
+import { GameobjectLootTemplate } from '@keira-types/gameobject-loot-template.type';
+import { QueryError } from 'mysql2';
+import { GameobjectHandlerService } from '../gameobject-handler.service';
+import { GameobjectLootTemplateService } from './gameobject-loot-template.service';
 
 @Component({
   selector: 'keira-gameobject-loot-template',
@@ -23,7 +22,7 @@ export class GameobjectLootTemplateComponent extends LootTemplateIdComponent<Gam
           // always re-check the 'type'
           this._type = data[0].type;
         },
-        error: (error: MysqlError) => {
+        error: (error: QueryError) => {
           console.error(error);
         },
       }),

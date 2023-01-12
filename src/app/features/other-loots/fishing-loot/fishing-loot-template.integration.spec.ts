@@ -1,15 +1,15 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { FishingLootTemplate } from '@keira-types/fishing-loot-template.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { FishingLootHandlerService } from './fishing-loot-handler.service';
 import { FishingLootTemplateComponent } from './fishing-loot-template.component';
 import { FishingLootTemplateModule } from './fishing-loot-template.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { FishingLootTemplate } from '@keira-types/fishing-loot-template.type';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
-import { FishingLootHandlerService } from './fishing-loot-handler.service';
 
 class FishingLootTemplatePage extends MultiRowEditorPageObject<FishingLootTemplateComponent> {}
 
@@ -24,14 +24,12 @@ describe('FishingLootTemplate integration tests', () => {
   originalRow1.Item = 1;
   originalRow2.Item = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), FishingLootTemplateModule, RouterTestingModule],
-        providers: [FishingLootHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), FishingLootTemplateModule, RouterTestingModule, TranslateTestingModule],
+      providers: [FishingLootHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     const handlerService = TestBed.inject(FishingLootHandlerService);

@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-
-import { CreatureHandlerService } from '../creature-handler.service';
+import { MultiRowEditorService } from '@keira-shared/abstract/service/editors/multi-row-editor.service';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
 import {
-  CREATURE_TEMPLATE_RESISTANCE_ID,
-  CREATURE_TEMPLATE_RESISTANCE_TABLE,
-  CREATURE_TEMPLATE_RESISTANCE_ID_2,
   CreatureTemplateResistance,
+  CREATURE_TEMPLATE_RESISTANCE_ID,
+  CREATURE_TEMPLATE_RESISTANCE_ID_2,
+  CREATURE_TEMPLATE_RESISTANCE_TABLE,
 } from '@keira-types/creature-template-resistance.type';
-import { MultiRowEditorService } from '@keira-shared/abstract/service/editors/multi-row-editor.service';
+import { ToastrService } from 'ngx-toastr';
+import { CreatureHandlerService } from '../creature-handler.service';
 
 @Injectable()
 export class CreatureTemplateResistanceService extends MultiRowEditorService<CreatureTemplateResistance> {
@@ -18,7 +17,7 @@ export class CreatureTemplateResistanceService extends MultiRowEditorService<Cre
   /* istanbul ignore next */ // because of: https://github.com/gotwarlost/istanbul/issues/690
   constructor(
     protected handlerService: CreatureHandlerService,
-    public readonly queryService: MysqlQueryService,
+    readonly queryService: MysqlQueryService,
     protected toastrService: ToastrService,
   ) {
     super(

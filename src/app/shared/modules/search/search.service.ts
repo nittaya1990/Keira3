@@ -1,15 +1,15 @@
-import { FormControl, FormGroup } from 'ngx-typesafe-forms';
-
+import { QueryService } from '@keira-shared/services/query.service';
+import { FormControl, FormGroup } from '@angular/forms';
 import { QueryForm, StringKeys, TableRow } from '../../types/general';
 import { SubscriptionHandler } from '../../utils/subscription-handler/subscription-handler';
-import { QueryService } from '@keira-shared/services/query.service';
+import { ModelForm, ModelNestedForm } from '@keira-shared/utils/helpers';
 
 export abstract class SearchService<T extends TableRow> extends SubscriptionHandler {
   query: string;
   rows: T[];
-  fields: FormGroup<T> = new FormGroup({} as any);
-  queryForm = new FormGroup<QueryForm<T>>({
-    limit: new FormControl(50),
+  fields: FormGroup<ModelForm<T>> = new FormGroup({} as any);
+  queryForm = new FormGroup<ModelNestedForm<QueryForm<T>>>({
+    limit: new FormControl<number>(50),
     fields: this.fields,
   });
 

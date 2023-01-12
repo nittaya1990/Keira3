@@ -1,10 +1,9 @@
-import { Observable } from 'rxjs';
-import { MysqlError } from 'mysql';
-import { ToastrService } from 'ngx-toastr';
-
 import { Class, TableRow } from '@keira-types/general';
-import { HandlerService } from '../handlers/handler.service';
+import { QueryError } from 'mysql2';
+import { ToastrService } from 'ngx-toastr';
+import { Observable } from 'rxjs';
 import { MysqlQueryService } from '../../../services/mysql-query.service';
+import { HandlerService } from '../handlers/handler.service';
 import { MultiRowEditorService } from './multi-row-editor.service';
 
 export abstract class MultiRowComplexKeyEditorService<T extends TableRow> extends MultiRowEditorService<T> {
@@ -19,7 +18,7 @@ export abstract class MultiRowComplexKeyEditorService<T extends TableRow> extend
     _entityIdField: string[],
     protected _entitySecondIdField: string,
     protected handlerService: HandlerService<T>,
-    public readonly queryService: MysqlQueryService,
+    readonly queryService: MysqlQueryService,
     protected toastrService: ToastrService,
   ) {
     super(_entityClass, _entityTable, JSON.stringify(_entityIdField), _entitySecondIdField, handlerService, queryService, toastrService);
@@ -44,11 +43,8 @@ export abstract class MultiRowComplexKeyEditorService<T extends TableRow> extend
   protected addIdToNewRow(newRow): void {
     const obj = this._loadedEntityId as Partial<T>;
 
-    for (const key in obj) {
-      /* istanbul ignore else */
-      if (obj.hasOwnProperty(key)) {
-        newRow[key] = obj[key];
-      }
+    for (const key of Object.keys(obj)) {
+      newRow[key] = obj[key];
     }
   }
 
@@ -70,7 +66,7 @@ export abstract class MultiRowComplexKeyEditorService<T extends TableRow> extend
           this.onReloadSuccessful(data);
           this._loading = false;
         },
-        error: (error: MysqlError) => {
+        error: (error: QueryError) => {
           this._error = error;
           this._loading = false;
         },

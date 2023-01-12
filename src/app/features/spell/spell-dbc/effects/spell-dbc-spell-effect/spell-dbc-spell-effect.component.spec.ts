@@ -1,28 +1,29 @@
-import { TestBed } from '@angular/core/testing';
-
-import { SpellDbcSpellEffectComponent } from './spell-dbc-spell-effect.component';
-import { PageObject } from '@keira-testing/page-object';
 import { Component, ViewChild } from '@angular/core';
-import { SpellDbcService } from '../../spell-dbc.service';
-import { SpellDbcModule } from '../../spell-dbc.module';
+import { TestBed } from '@angular/core/testing';
+import { FormGroup } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SpellHandlerService } from '../../../spell-handler.service';
-import { FormGroup } from 'ngx-typesafe-forms';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { ModelForm } from '@keira-shared/utils/helpers';
+import { PageObject } from '@keira-testing/page-object';
+import { SpellDbc } from '@keira-types/spell-dbc.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ToastrModule } from 'ngx-toastr';
-import { SpellDbc } from '@keira-types/spell-dbc.type';
-import { SPELL_DBC_SPELL_EFFECT_FIELDS, SpellDbcSpellEffectFieldPrefix } from './spell-dbc-spell-effect.model';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { SpellHandlerService } from '../../../spell-handler.service';
+import { SpellDbcModule } from '../../spell-dbc.module';
+import { SpellDbcService } from '../../spell-dbc.service';
+import { SpellDbcSpellEffectComponent } from './spell-dbc-spell-effect.component';
+import { SpellDbcSpellEffectFieldPrefix, SPELL_DBC_SPELL_EFFECT_FIELDS } from './spell-dbc-spell-effect.model';
 
 describe('SpellDbcSpellEffectComponent', () => {
   class SpellDbcSpellEffectComponentPage extends PageObject<TestHostComponent> {
-    getLabelByIndex(fieldName: string, index: number) {
+    getLabelByIndex(fieldName: string, index: number): HTMLLabelElement {
       return this.query<HTMLLabelElement>(`.control-label[for="${fieldName}_${index}"]`);
     }
-    getInputByIndex(fieldName: string, index: number) {
+    getInputByIndex(fieldName: string, index: number): HTMLInputElement {
       return this.query<HTMLInputElement>(`input.form-control[id="${fieldName}_${index}"]`);
     }
-    expectInputVisibleByIndex(fieldName: string, index: number) {
+    expectInputVisibleByIndex(fieldName: string, index: number): void {
       expect(this.getLabelByIndex(fieldName, index)).toBeDefined();
       expect(this.getInputByIndex(fieldName, index)).toBeDefined();
     }
@@ -33,14 +34,21 @@ describe('SpellDbcSpellEffectComponent', () => {
   })
   class TestHostComponent {
     @ViewChild(SpellDbcSpellEffectComponent) child: SpellDbcSpellEffectComponent;
-    form: FormGroup<SpellDbc>;
+    form: FormGroup<ModelForm<SpellDbc>>;
     index: number;
   }
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TestHostComponent, SpellDbcSpellEffectComponent],
-      imports: [ModalModule.forRoot(), ToastrModule.forRoot(), TooltipModule.forRoot(), SpellDbcModule, RouterTestingModule],
+      imports: [
+        ModalModule.forRoot(),
+        ToastrModule.forRoot(),
+        TooltipModule.forRoot(),
+        SpellDbcModule,
+        RouterTestingModule,
+        TranslateTestingModule,
+      ],
       providers: [SpellHandlerService],
     }).compileComponents();
   });
@@ -78,7 +86,7 @@ describe('SpellDbcSpellEffectComponent', () => {
     host.index = testIndex;
 
     for (const field of SPELL_DBC_SPELL_EFFECT_FIELDS) {
-      form.getControl(`${field}_${testIndex}`).setValue(createMockVal(field));
+      form.get(`${field}_${testIndex}`).setValue(createMockVal(field));
     }
     page.detectChanges();
     await page.whenStable();
@@ -100,7 +108,7 @@ describe('SpellDbcSpellEffectComponent', () => {
     await page.whenStable();
 
     for (const field of SPELL_DBC_SPELL_EFFECT_FIELDS) {
-      expect(form.getControl(`${field}_${testIndex}`).value).toEqual(createMockVal(field));
+      expect(form.get(`${field}_${testIndex}`).value).toEqual(createMockVal(field));
     }
   });
 });

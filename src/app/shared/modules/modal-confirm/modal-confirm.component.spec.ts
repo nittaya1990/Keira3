@@ -4,12 +4,13 @@ import Spy = jasmine.Spy;
 import { ModalConfirmComponent } from './modal-confirm.component';
 import { ModalConfirmModule } from './modal-confirm.module';
 import { PageObject } from '../../testing/page-object';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 
 class ModalConfirmComponentPage extends PageObject<ModalConfirmComponent> {
-  get yesBtn() {
+  get yesBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#yes');
   }
-  get noBtn() {
+  get noBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#no');
   }
 }
@@ -20,14 +21,12 @@ describe('ModalConfirmComponent', () => {
   let hideSpy: Spy;
   let page: ModalConfirmComponentPage;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ModalConfirmModule],
-        providers: [BsModalRef],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ModalConfirmModule, TranslateTestingModule],
+      providers: [BsModalRef],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ModalConfirmComponent);

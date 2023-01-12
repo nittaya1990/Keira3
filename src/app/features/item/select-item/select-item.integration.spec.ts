@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { RouterTestingModule } from '@angular/router/testing';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { SelectItemComponent } from './select-item.component';
-import { SelectItemService } from './select-item.service';
-import { SelectItemModule } from './select-item.module';
-import { ItemTemplate } from '@keira-types/item-template.type';
 import { SelectPageObject } from '@keira-testing/select-page-object';
+import { ItemTemplate } from '@keira-types/item-template.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { ItemHandlerService } from '../item-handler.service';
+import { SelectItemComponent } from './select-item.component';
+import { SelectItemModule } from './select-item.module';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class SelectItemComponentPage extends SelectPageObject<SelectItemComponent> {
   ID_FIELD = 'entry';
@@ -21,7 +20,6 @@ class SelectItemComponentPage extends SelectPageObject<SelectItemComponent> {
 describe('SelectItem integration tests', () => {
   let component: SelectItemComponent;
   let fixture: ComponentFixture<SelectItemComponent>;
-  let selectService: SelectItemService;
   let page: SelectItemComponentPage;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -29,21 +27,17 @@ describe('SelectItem integration tests', () => {
 
   const value = 1200;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SelectItemModule, RouterTestingModule],
-        providers: [ItemHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SelectItemModule, RouterTestingModule, TranslateTestingModule],
+      providers: [ItemHandlerService],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     navigateSpy = spyOn(TestBed.inject(Router), 'navigate');
     queryService = TestBed.inject(MysqlQueryService);
     querySpy = spyOn(queryService, 'query').and.returnValue(of([{ max: 1 }]));
-
-    selectService = TestBed.inject(SelectItemService);
 
     fixture = TestBed.createComponent(SelectItemComponent);
     page = new SelectItemComponentPage(fixture);
@@ -52,52 +46,43 @@ describe('SelectItem integration tests', () => {
     fixture.detectChanges();
   });
 
-  it(
-    'should correctly initialise',
-    waitForAsync(async () => {
-      await fixture.whenStable();
-      expect(page.createInput.value).toEqual(`${component.customStartingId}`);
-      page.expectNewEntityFree();
-      expect(querySpy).toHaveBeenCalledWith('SELECT MAX(entry) AS max FROM item_template;');
-      expect(page.queryWrapper.innerText).toContain('SELECT * FROM `item_template` LIMIT 50');
-    }),
-  );
+  it('should correctly initialise', waitForAsync(async () => {
+    await fixture.whenStable();
+    expect(page.createInput.value).toEqual(`${component.customStartingId}`);
+    page.expectNewEntityFree();
+    expect(querySpy).toHaveBeenCalledWith('SELECT MAX(entry) AS max FROM item_template;');
+    expect(page.queryWrapper.innerText).toContain('SELECT * FROM `item_template` LIMIT 50');
+  }));
 
-  it(
-    'should correctly behave when inserting and selecting free id',
-    waitForAsync(async () => {
-      await fixture.whenStable();
-      querySpy.calls.reset();
-      querySpy.and.returnValue(of([]));
+  it('should correctly behave when inserting and selecting free id', waitForAsync(async () => {
+    await fixture.whenStable();
+    querySpy.calls.reset();
+    querySpy.and.returnValue(of([]));
 
-      page.setInputValue(page.createInput, value);
+    page.setInputValue(page.createInput, value);
 
-      expect(querySpy).toHaveBeenCalledTimes(1);
-      expect(querySpy).toHaveBeenCalledWith(`SELECT * FROM \`item_template\` WHERE (entry = ${value})`);
-      page.expectNewEntityFree();
+    expect(querySpy).toHaveBeenCalledTimes(1);
+    expect(querySpy).toHaveBeenCalledWith(`SELECT * FROM \`item_template\` WHERE (entry = ${value})`);
+    page.expectNewEntityFree();
 
-      page.clickElement(page.selectNewBtn);
+    page.clickElement(page.selectNewBtn);
 
-      expect(navigateSpy).toHaveBeenCalledTimes(1);
-      expect(navigateSpy).toHaveBeenCalledWith(['item/item-template']);
-      page.expectTopBarCreatingNew(value);
-    }),
-  );
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
+    expect(navigateSpy).toHaveBeenCalledWith(['item/item-template']);
+    page.expectTopBarCreatingNew(value);
+  }));
 
-  it(
-    'should correctly behave when inserting an existing entity',
-    waitForAsync(async () => {
-      await fixture.whenStable();
-      querySpy.calls.reset();
-      querySpy.and.returnValue(of(['mock value']));
+  it('should correctly behave when inserting an existing entity', waitForAsync(async () => {
+    await fixture.whenStable();
+    querySpy.calls.reset();
+    querySpy.and.returnValue(of(['mock value']));
 
-      page.setInputValue(page.createInput, value);
+    page.setInputValue(page.createInput, value);
 
-      expect(querySpy).toHaveBeenCalledTimes(1);
-      expect(querySpy).toHaveBeenCalledWith(`SELECT * FROM \`item_template\` WHERE (entry = ${value})`);
-      page.expectEntityAlreadyInUse();
-    }),
-  );
+    expect(querySpy).toHaveBeenCalledTimes(1);
+    expect(querySpy).toHaveBeenCalledWith(`SELECT * FROM \`item_template\` WHERE (entry = ${value})`);
+    page.expectEntityAlreadyInUse();
+  }));
 
   for (const { testId, id, name, limit, expectedQuery } of [
     {

@@ -1,8 +1,8 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Component, ViewChild } from '@angular/core';
-
-import { SearchButtonComponent } from './search-button.component';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { PageObject } from '@keira-testing/page-object';
+import { SearchButtonComponent } from './search-button.component';
 
 @Component({
   template: `<keira-search-button [searchService]="searchService"></keira-search-button>`,
@@ -13,19 +13,18 @@ class TestHostComponent {
 }
 
 class EditorButtonsPage extends PageObject<TestHostComponent> {
-  get searchBtn() {
+  get searchBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#search-btn');
   }
 }
 
 describe('EditorButtonsComponent', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [SearchButtonComponent, TestHostComponent],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [TranslateTestingModule],
+      declarations: [SearchButtonComponent, TestHostComponent],
+    }).compileComponents();
+  }));
 
   const setup = () => {
     const searchService = {

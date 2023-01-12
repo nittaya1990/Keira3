@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { QuestPreviewService } from './quest-preview.service';
 import { PreviewHelperService } from '@keira-shared/services/preview-helper.service';
+import { QuestPreviewService } from './quest-preview.service';
 
 @Component({
   selector: 'keira-quest-preview',
@@ -8,7 +8,7 @@ import { PreviewHelperService } from '@keira-shared/services/preview-helper.serv
   styleUrls: ['./quest-preview.component.scss'],
 })
 export class QuestPreviewComponent implements OnInit {
-  constructor(public readonly service: QuestPreviewService, public readonly helper: PreviewHelperService) {}
+  constructor(readonly service: QuestPreviewService, readonly helper: PreviewHelperService) {}
 
   descriptionToggle = true;
   progressToggle = true;

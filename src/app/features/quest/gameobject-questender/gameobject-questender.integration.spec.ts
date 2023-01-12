@@ -1,16 +1,16 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-
-import { GameobjectQuestenderComponent } from './gameobject-questender.component';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { GameobjectQuestender } from '@keira-types/gameobject-questender.type';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { GameobjectQuestender } from '@keira-types/gameobject-questender.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { QuestHandlerService } from '../quest-handler.service';
-import { QuestModule } from '../quest.module';
 import { QuestPreviewService } from '../quest-preview/quest-preview.service';
+import { QuestModule } from '../quest.module';
+import { GameobjectQuestenderComponent } from './gameobject-questender.component';
 
 class GameobjectQuestenderPage extends MultiRowEditorPageObject<GameobjectQuestenderComponent> {
   get questPreviewGoEnd() {
@@ -21,13 +21,11 @@ class GameobjectQuestenderPage extends MultiRowEditorPageObject<GameobjectQueste
 describe('GameobjectQuestender integration tests', () => {
   const id = 1234;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), RouterTestingModule, QuestModule],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), RouterTestingModule, QuestModule, TranslateTestingModule],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     const originalRow0 = new GameobjectQuestender();

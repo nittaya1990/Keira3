@@ -1,10 +1,9 @@
-import { ToastrService } from 'ngx-toastr';
-
 import { Class, TableRow } from '@keira-types/general';
-import { EditorService } from './editor.service';
-import { HandlerService } from '../handlers/handler.service';
-import { MysqlQueryService } from '../../../services/mysql-query.service';
+import { ToastrService } from 'ngx-toastr';
 import { distinctUntilChanged } from 'rxjs';
+import { MysqlQueryService } from '../../../services/mysql-query.service';
+import { HandlerService } from '../handlers/handler.service';
+import { EditorService } from './editor.service';
 
 export abstract class MultiRowEditorService<T extends TableRow> extends EditorService<T> {
   protected FIRST_ROW_START_VALUE = 0;
@@ -34,7 +33,7 @@ export abstract class MultiRowEditorService<T extends TableRow> extends EditorSe
     protected _entityIdField: string,
     protected _entitySecondIdField: string,
     protected handlerService: HandlerService<T>,
-    public readonly queryService: MysqlQueryService,
+    readonly queryService: MysqlQueryService,
     protected toastrService: ToastrService,
   ) {
     super(_entityClass, _entityTable, _entityIdField, handlerService, queryService, toastrService);
@@ -48,7 +47,7 @@ export abstract class MultiRowEditorService<T extends TableRow> extends EditorSe
       this._form.valueChanges.pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))).subscribe(() => {
         if (!this._loading) {
           if (this._form.dirty && this.isFormIdUnique()) {
-            this._newRows[this.getSelectedRowIndex()] = this._form.getRawValue();
+            this._newRows[this.getSelectedRowIndex()] = this._form.getRawValue() as T;
             this._newRows = [...this._newRows];
             this._selectedRowId = this.form.controls[this._entitySecondIdField].value;
             this.checkRowsCorrectness();
@@ -151,10 +150,8 @@ export abstract class MultiRowEditorService<T extends TableRow> extends EditorSe
       } else {
         console.error(`Control '${field}' does not exist!`);
         console.log(`----------- DEBUG CONTROL KEYS:`);
-        for (const k in this._form.controls) {
-          if (this._form.controls.hasOwnProperty(k)) {
-            console.log(k);
-          }
+        for (const k of Object.keys(this._form.controls)) {
+          console.log(k);
         }
       }
     }

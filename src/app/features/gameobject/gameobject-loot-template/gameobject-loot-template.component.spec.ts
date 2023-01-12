@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { anything, instance, when } from 'ts-mockito';
-import { of, throwError } from 'rxjs';
-import Spy = jasmine.Spy;
-
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { MockedMysqlQueryService } from '@keira-testing/mocks';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ToastrModule } from 'ngx-toastr';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { MockedMysqlQueryService } from '@keira-testing/mocks';
-import { GameobjectLootTemplateComponent } from './gameobject-loot-template.component';
-import { GameobjectLootTemplateService } from './gameobject-loot-template.service';
-import { GameobjectLootTemplateModule } from './gameobject-loot-template.module';
+import { of, throwError } from 'rxjs';
+import { anything, instance, when } from 'ts-mockito';
 import { GameobjectHandlerService } from '../gameobject-handler.service';
 import { SaiGameobjectHandlerService } from '../sai-gameobject-handler.service';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { GameobjectLootTemplateComponent } from './gameobject-loot-template.component';
+import { GameobjectLootTemplateModule } from './gameobject-loot-template.module';
+import { GameobjectLootTemplateService } from './gameobject-loot-template.service';
+import Spy = jasmine.Spy;
 
 describe('GameobjectTemplateComponent', () => {
   let component: GameobjectLootTemplateComponent;
@@ -26,24 +26,23 @@ describe('GameobjectTemplateComponent', () => {
   const lootId = 1230;
   const type = 3;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          GameobjectLootTemplateModule,
-          RouterTestingModule,
-          ModalModule.forRoot(),
-          TooltipModule.forRoot(),
-          ToastrModule.forRoot(),
-        ],
-        providers: [
-          { provide: MysqlQueryService, useValue: instance(MockedMysqlQueryService) },
-          GameobjectHandlerService,
-          SaiGameobjectHandlerService,
-        ],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        GameobjectLootTemplateModule,
+        RouterTestingModule,
+        ModalModule.forRoot(),
+        TooltipModule.forRoot(),
+        ToastrModule.forRoot(),
+        TranslateTestingModule,
+      ],
+      providers: [
+        { provide: MysqlQueryService, useValue: instance(MockedMysqlQueryService) },
+        GameobjectHandlerService,
+        SaiGameobjectHandlerService,
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     when(MockedMysqlQueryService.query(anything(), anything())).thenReturn(of());

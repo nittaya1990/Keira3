@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from 'ngx-typesafe-forms';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
-import { ToastrModule } from 'ngx-toastr';
+import { FormGroup } from '@angular/forms';
+import { SPELL_DBC_PROC_FLAGS, SPELL_DBC_TARGETS } from '@keira-shared/constants/flags/spell-dbc-effect-flags';
+import { ModelForm } from '@keira-shared/utils/helpers';
 import { SpellDbc } from '@keira-types/spell-dbc.type';
 
 @Component({
@@ -9,5 +9,8 @@ import { SpellDbc } from '@keira-types/spell-dbc.type';
   templateUrl: './spell-dbc-effects.component.html',
 })
 export class SpellDbcEffectsComponent {
-  @Input() formGroup: FormGroup<SpellDbc>;
+  readonly SPELL_DBC_TARGETS = SPELL_DBC_TARGETS;
+  readonly SPELL_DBC_PROC_FLAGS = SPELL_DBC_PROC_FLAGS;
+
+  @Input() formGroup: FormGroup<ModelForm<SpellDbc>>;
 }

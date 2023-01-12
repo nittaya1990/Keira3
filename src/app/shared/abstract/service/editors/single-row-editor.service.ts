@@ -1,11 +1,10 @@
-import { ToastrService } from 'ngx-toastr';
-
 import { Class, TableRow } from '@keira-types/general';
-import { MysqlQueryService } from '../../../services/mysql-query.service';
-import { EditorService } from './editor.service';
-import { HandlerService } from '../handlers/handler.service';
-import { getNumberOrString } from '../../../utils/helpers';
+import { ToastrService } from 'ngx-toastr';
 import { distinctUntilChanged } from 'rxjs';
+import { MysqlQueryService } from '../../../services/mysql-query.service';
+import { getNumberOrString } from '../../../utils/helpers';
+import { HandlerService } from '../handlers/handler.service';
+import { EditorService } from './editor.service';
 
 export abstract class SingleRowEditorService<T extends TableRow> extends EditorService<T> {
   protected _originalValue: T;
@@ -18,7 +17,7 @@ export abstract class SingleRowEditorService<T extends TableRow> extends EditorS
     protected _entityNameField: string,
     protected isMainEntity: boolean,
     protected handlerService: HandlerService<T>,
-    public readonly queryService: MysqlQueryService,
+    readonly queryService: MysqlQueryService,
     protected toastrService: ToastrService,
   ) {
     super(_entityClass, _entityTable, _entityIdField, handlerService, queryService, toastrService);
@@ -45,14 +44,18 @@ export abstract class SingleRowEditorService<T extends TableRow> extends EditorS
       this._entityTable,
       this._entityIdField,
       this._originalValue,
-      this._form.getRawValue(),
+      this._form.getRawValue() as T,
     );
 
     this.updateEditorStatus();
   }
 
   protected updateFullQuery(): void {
-    this._fullQuery = this.queryService.getFullDeleteInsertQuery<T>(this._entityTable, [this._form.getRawValue()], this._entityIdField);
+    this._fullQuery = this.queryService.getFullDeleteInsertQuery<T>(
+      this._entityTable,
+      [this._form.getRawValue() as T],
+      this._entityIdField,
+    );
   }
 
   /*
@@ -95,10 +98,8 @@ export abstract class SingleRowEditorService<T extends TableRow> extends EditorS
       } else {
         console.error(`Control '${field}' does not exist!`);
         console.log(`----------- DEBUG CONTROL KEYS:`);
-        for (const k in this._form.controls) {
-          if (this._form.controls.hasOwnProperty(k)) {
-            console.log(k);
-          }
+        for (const k of Object.keys(this._form.controls)) {
+          console.log(k);
         }
       }
     }

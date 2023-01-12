@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { map, Observable } from 'rxjs';
 import { ComplexKeyHandlerService } from '../../abstract/service/handlers/complex-key.handler.service';
-import { SAI_ID_FIELDS, SAI_TABLE, SAI_TYPES, SmartScripts } from '../../types/smart-scripts.type';
 import { MysqlQueryService } from '../../services/mysql-query.service';
-import { Observable, map } from 'rxjs';
+import { SAI_ID_FIELDS, SAI_TABLE, SAI_TYPES, SmartScripts } from '../../types/smart-scripts.type';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +23,7 @@ export class SaiHandlerService extends ComplexKeyHandlerService<SmartScripts> {
   }
 
   /* istanbul ignore next */ // because of: https://github.com/gotwarlost/istanbul/issues/690
-  constructor(protected router: Router, public readonly queryService: MysqlQueryService) {
+  constructor(protected router: Router, readonly queryService: MysqlQueryService) {
     super('smart-ai/editors', router, SAI_ID_FIELDS);
   }
 
@@ -76,14 +75,14 @@ export class SaiHandlerService extends ComplexKeyHandlerService<SmartScripts> {
 
     if (sai.source_type === SAI_TYPES.SAI_TYPE_CREATURE || sai.source_type === SAI_TYPES.SAI_TYPE_TIMED_ACTIONLIST) {
       if (sai.entryorguid < 0) {
-        query = `SELECT ct.name FROM creature_template AS ct INNER JOIN creature AS c ON c.id = ct.entry WHERE c.guid = ${-sai.entryorguid}`;
+        query = `SELECT ct.name FROM creature_template AS ct INNER JOIN creature AS c ON c.id1 = ct.entry WHERE c.guid = ${-sai.entryorguid}`;
       } else {
         const entry = sai.source_type === SAI_TYPES.SAI_TYPE_TIMED_ACTIONLIST ? Math.trunc(sai.entryorguid / 100) : sai.entryorguid;
         query = `SELECT name FROM creature_template WHERE entry = ${entry}`;
       }
     } else if (sai.source_type === SAI_TYPES.SAI_TYPE_GAMEOBJECT) {
       if (sai.entryorguid < 0) {
-        query = `SELECT ct.name FROM gameobject_template AS ct INNER JOIN gameobject AS c ON c.id = ct.entry WHERE c.guid = ${-sai.entryorguid}`;
+        query = `SELECT ct.name FROM gameobject_template AS ct INNER JOIN gameobject AS c ON c.id1 = ct.entry WHERE c.guid = ${-sai.entryorguid}`;
       } else {
         query = `SELECT name FROM gameobject_template WHERE entry = ${sai.entryorguid}`;
       }

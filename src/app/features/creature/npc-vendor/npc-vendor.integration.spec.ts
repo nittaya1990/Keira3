@@ -1,23 +1,22 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { SqliteQueryService } from '@keira-shared/services/sqlite-query.service';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { NpcVendor } from '@keira-types/npc-vendor.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { CreatureHandlerService } from '../creature-handler.service';
+import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
 import { NpcVendorComponent } from './npc-vendor.component';
 import { NpcVendorModule } from './npc-vendor.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { NpcVendor } from '@keira-types/npc-vendor.type';
-import { CreatureHandlerService } from '../creature-handler.service';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
-import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
-import { SqliteQueryService } from '@keira-shared/services/sqlite-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class NpcVendorPage extends MultiRowEditorPageObject<NpcVendorComponent> {}
 
 describe('NpcVendor integration tests', () => {
-  let component: NpcVendorComponent;
   let fixture: ComponentFixture<NpcVendorComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -34,14 +33,12 @@ describe('NpcVendor integration tests', () => {
   originalRow1.item = 1;
   originalRow2.item = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), NpcVendorModule, RouterTestingModule],
-        providers: [CreatureHandlerService, SaiCreatureHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), NpcVendorModule, RouterTestingModule, TranslateTestingModule],
+      providers: [CreatureHandlerService, SaiCreatureHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     handlerService = TestBed.inject(CreatureHandlerService);
@@ -55,7 +52,6 @@ describe('NpcVendor integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalRow0, originalRow1, originalRow2]));
 
     fixture = TestBed.createComponent(NpcVendorComponent);
-    component = fixture.componentInstance;
     page = new NpcVendorPage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();
@@ -258,41 +254,38 @@ describe('NpcVendor integration tests', () => {
       page.expectUniqueError();
     });
 
-    xit(
-      'changing a value via ItemExtendedCost should correctly work',
-      waitForAsync(async () => {
-        const field = 'ExtendedCost';
-        const sqliteQueryService = TestBed.inject(SqliteQueryService);
-        spyOn(sqliteQueryService, 'query').and.returnValue(of([{ id: 123, name: 'Mock ExtendedCost' }]));
+    xit('changing a value via ItemExtendedCost should correctly work', waitForAsync(async () => {
+      const field = 'ExtendedCost';
+      const sqliteQueryService = TestBed.inject(SqliteQueryService);
+      spyOn(sqliteQueryService, 'query').and.returnValue(of([{ id: 123, name: 'Mock ExtendedCost' }]));
 
-        // because this is a multi-row editor
-        page.clickRowOfDatatable(0);
-        await page.whenReady();
+      // because this is a multi-row editor
+      page.clickRowOfDatatable(0);
+      await page.whenReady();
 
-        page.clickElement(page.getSelectorBtn(field));
-        await page.whenReady();
-        page.expectModalDisplayed();
+      page.clickElement(page.getSelectorBtn(field));
+      await page.whenReady();
+      page.expectModalDisplayed();
 
-        page.clickSearchBtn();
-        await fixture.whenStable();
-        page.clickRowOfDatatableInModal(0);
-        await page.whenReady();
-        page.clickModalSelect();
-        await page.whenReady();
+      page.clickSearchBtn();
+      await fixture.whenStable();
+      page.clickRowOfDatatableInModal(0);
+      await page.whenReady();
+      page.clickModalSelect();
+      await page.whenReady();
 
-        page.expectDiffQueryToContain(
-          'DELETE FROM `npc_vendor` WHERE (`entry` = 1234) AND (`item` IN (0));\n' +
-            'INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`) VALUES\n' +
-            '(1234, 0, 0, 0, 0, 123, 0);',
-        );
-        page.expectFullQueryToContain(
-          'DELETE FROM `npc_vendor` WHERE (`entry` = 1234);\n' +
-            'INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`) VALUES\n' +
-            '(1234, 0, 0, 0, 0, 123, 0),\n' +
-            '(1234, 0, 1, 0, 0, 0, 0),\n' +
-            '(1234, 0, 2, 0, 0, 0, 0);',
-        );
-      }),
-    );
+      page.expectDiffQueryToContain(
+        'DELETE FROM `npc_vendor` WHERE (`entry` = 1234) AND (`item` IN (0));\n' +
+          'INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`) VALUES\n' +
+          '(1234, 0, 0, 0, 0, 123, 0);',
+      );
+      page.expectFullQueryToContain(
+        'DELETE FROM `npc_vendor` WHERE (`entry` = 1234);\n' +
+          'INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`) VALUES\n' +
+          '(1234, 0, 0, 0, 0, 123, 0),\n' +
+          '(1234, 0, 1, 0, 0, 0, 0),\n' +
+          '(1234, 0, 2, 0, 0, 0, 0);',
+      );
+    }));
   });
 });

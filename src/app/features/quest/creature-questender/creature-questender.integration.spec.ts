@@ -1,16 +1,16 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-
-import { CreatureQuestenderComponent } from './creature-questender.component';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { CreatureQuestender } from '@keira-types/creature-questender.type';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { CreatureQuestender } from '@keira-types/creature-questender.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { QuestHandlerService } from '../quest-handler.service';
-import { QuestModule } from '../quest.module';
 import { QuestPreviewService } from '../quest-preview/quest-preview.service';
+import { QuestModule } from '../quest.module';
+import { CreatureQuestenderComponent } from './creature-questender.component';
 
 class CreatureQuestenderPage extends MultiRowEditorPageObject<CreatureQuestenderComponent> {
   get questPreviewNpcEnd() {
@@ -21,13 +21,11 @@ class CreatureQuestenderPage extends MultiRowEditorPageObject<CreatureQuestender
 describe('CreatureQuestender integration tests', () => {
   const id = 1234;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), RouterTestingModule, QuestModule],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), RouterTestingModule, QuestModule, TranslateTestingModule],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     const originalRow0 = new CreatureQuestender();

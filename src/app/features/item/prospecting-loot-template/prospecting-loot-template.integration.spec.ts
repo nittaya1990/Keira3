@@ -1,21 +1,20 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { ProspectingLootTemplate } from '@keira-types/prospecting-loot-template.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { ItemHandlerService } from '../item-handler.service';
 import { ProspectingLootTemplateComponent } from './prospecting-loot-template.component';
 import { ProspectingLootTemplateModule } from './prospecting-loot-template.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { ProspectingLootTemplate } from '@keira-types/prospecting-loot-template.type';
-import { ItemHandlerService } from '../item-handler.service';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class ProspectingLootTemplatePage extends MultiRowEditorPageObject<ProspectingLootTemplateComponent> {}
 
 describe('ProspectingLootTemplate integration tests', () => {
-  let component: ProspectingLootTemplateComponent;
   let fixture: ComponentFixture<ProspectingLootTemplateComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -32,14 +31,12 @@ describe('ProspectingLootTemplate integration tests', () => {
   originalRow1.Item = 1;
   originalRow2.Item = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), ProspectingLootTemplateModule, RouterTestingModule],
-        providers: [ItemHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), ProspectingLootTemplateModule, RouterTestingModule, TranslateTestingModule],
+      providers: [ItemHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     handlerService = TestBed.inject(ItemHandlerService);
@@ -53,7 +50,6 @@ describe('ProspectingLootTemplate integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalRow0, originalRow1, originalRow2]));
 
     fixture = TestBed.createComponent(ProspectingLootTemplateComponent);
-    component = fixture.componentInstance;
     page = new ProspectingLootTemplatePage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();

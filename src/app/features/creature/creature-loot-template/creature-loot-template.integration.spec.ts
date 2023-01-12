@@ -1,23 +1,22 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { CreatureLootTemplate } from '@keira-types/creature-loot-template.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { CreatureHandlerService } from '../creature-handler.service';
+import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
 import { CreatureLootTemplateComponent } from './creature-loot-template.component';
 import { CreatureLootTemplateModule } from './creature-loot-template.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { CreatureLootTemplate } from '@keira-types/creature-loot-template.type';
-import { CreatureHandlerService } from '../creature-handler.service';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
 import { CreatureLootTemplateService } from './creature-loot-template.service';
-import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class CreatureLootTemplatePage extends MultiRowEditorPageObject<CreatureLootTemplateComponent> {}
 
 describe('CreatureLootTemplate integration tests', () => {
-  let component: CreatureLootTemplateComponent;
   let fixture: ComponentFixture<CreatureLootTemplateComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -34,14 +33,12 @@ describe('CreatureLootTemplate integration tests', () => {
   originalRow1.Item = 1;
   originalRow2.Item = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), CreatureLootTemplateModule, RouterTestingModule],
-        providers: [CreatureHandlerService, SaiCreatureHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), CreatureLootTemplateModule, RouterTestingModule, TranslateTestingModule],
+      providers: [CreatureHandlerService, SaiCreatureHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean, lootId = id) {
     spyOn(TestBed.inject(CreatureLootTemplateService), 'getLootId').and.returnValue(of([{ lootId }]));
@@ -59,7 +56,6 @@ describe('CreatureLootTemplate integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalRow0, originalRow1, originalRow2]));
 
     fixture = TestBed.createComponent(CreatureLootTemplateComponent);
-    component = fixture.componentInstance;
     page = new CreatureLootTemplatePage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();
@@ -94,15 +90,12 @@ describe('CreatureLootTemplate integration tests', () => {
       expect(handlerService.isCreatureLootTemplateUnsaved).toBe(false);
     });
 
-    xit(
-      'should reflect the item names',
-      waitForAsync(async () => {
-        page.addNewRow();
-        page.detectChanges();
-        await page.whenReady();
-        expect(page.getDatatableCell(0, 3).innerText).toContain('MockItemName');
-      }),
-    );
+    xit('should reflect the item names', waitForAsync(async () => {
+      page.addNewRow();
+      page.detectChanges();
+      await page.whenReady();
+      expect(page.getDatatableCell(0, 3).innerText).toContain('MockItemName');
+    }));
 
     it('adding new rows and executing the query should correctly work', () => {
       const expectedQuery =

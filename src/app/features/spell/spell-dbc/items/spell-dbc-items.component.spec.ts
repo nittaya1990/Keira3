@@ -1,16 +1,18 @@
-import { TestBed } from '@angular/core/testing';
 import { Component, ViewChild } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { FormGroup } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { FormGroup } from 'ngx-typesafe-forms';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { ModelForm } from '@keira-shared/utils/helpers';
+import { PageObject } from '@keira-testing/page-object';
+import { SpellDbc } from '@keira-types/spell-dbc.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ToastrModule } from 'ngx-toastr';
-
-import { SpellDbcItemsComponent } from './spell-dbc-items.component';
-import { SpellDbcModule } from '../spell-dbc.module';
-import { PageObject } from '@keira-testing/page-object';
-import { SpellDbcService } from '../spell-dbc.service';
 import { SpellHandlerService } from '../../spell-handler.service';
-import { SpellDbc } from '@keira-types/spell-dbc.type';
+import { SpellDbcModule } from '../spell-dbc.module';
+import { SpellDbcService } from '../spell-dbc.service';
+import { SpellDbcItemsComponent } from './spell-dbc-items.component';
 
 describe('SpellDbcItemsComponent', () => {
   class SpellDbcItemsComponentPage extends PageObject<TestHostComponent> {}
@@ -20,7 +22,7 @@ describe('SpellDbcItemsComponent', () => {
   })
   class TestHostComponent {
     @ViewChild(SpellDbcItemsComponent) child: SpellDbcItemsComponent;
-    form: FormGroup<SpellDbc>;
+    form: FormGroup<ModelForm<SpellDbc>>;
   }
 
   const fields: string[] = [
@@ -51,7 +53,14 @@ describe('SpellDbcItemsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TestHostComponent, SpellDbcItemsComponent],
-      imports: [ToastrModule.forRoot(), TooltipModule.forRoot(), SpellDbcModule, RouterTestingModule],
+      imports: [
+        ModalModule.forRoot(),
+        ToastrModule.forRoot(),
+        TooltipModule.forRoot(),
+        SpellDbcModule,
+        RouterTestingModule,
+        TranslateTestingModule,
+      ],
       providers: [SpellHandlerService],
     }).compileComponents();
   });
@@ -81,7 +90,7 @@ describe('SpellDbcItemsComponent', () => {
     const { page, form } = setup();
 
     for (const field of fields) {
-      form.getControl(field).setValue(createMockVal(field));
+      form.get(field).setValue(createMockVal(field));
     }
     page.detectChanges();
 
@@ -100,7 +109,7 @@ describe('SpellDbcItemsComponent', () => {
     page.detectChanges();
 
     for (const field of fields) {
-      expect(form.getControl(field).value).toEqual(createMockVal(field));
+      expect(form.get(field).value).toEqual(createMockVal(field));
     }
   });
 });

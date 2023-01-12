@@ -3,52 +3,52 @@ import { PageObject } from './page-object';
 export abstract class SelectPageObject<T> extends PageObject<T> {
   ID_FIELD: string;
 
-  get createInput() {
+  get createInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('keira-create input#id');
   }
-  get selectNewBtn() {
+  get selectNewBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('keira-create #select-button');
   }
-  get freeStatusWrapper() {
+  get freeStatusWrapper(): HTMLDivElement {
     return this.query<HTMLDivElement>('#id-free-status');
   }
 
-  get searchIdInput() {
+  get searchIdInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('input#search-id');
   }
-  get searchNameInput() {
+  get searchNameInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('input#name');
   }
-  get searchLimitInput() {
+  get searchLimitInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('input#limit');
   }
-  get searchBtn() {
+  get searchBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#search-btn');
   }
 
-  get topBar() {
+  get topBar(): HTMLElement {
     return this.query<HTMLElement>('keira-top-bar');
   }
 
-  expectTopBarCreatingNew(id: number) {
+  expectTopBarCreatingNew(id: number): void {
     expect(this.topBar.innerText).toContain(`Creating new: ${id}`);
   }
 
-  expectTopBarEditing(id: number, name: string) {
+  expectTopBarEditing(id: number, name: string): void {
     expect(this.topBar.innerText).toContain(`Editing: ${name} (${id})`);
   }
 
-  expectNewEntityFree() {
+  expectNewEntityFree(): void {
     const error = 'Expected new entity to be free';
     expect(this.selectNewBtn.disabled).toBe(false, error);
     expect(this.freeStatusWrapper.innerHTML).toContain('fa-check-circle', error);
-    expect(this.freeStatusWrapper.innerText).toContain(`The ${this.ID_FIELD} is free`, error);
+    expect(this.freeStatusWrapper.innerText).toContain(`CREATE.FREE_ENTRY CREATE.FREE`, error);
   }
 
-  expectEntityAlreadyInUse() {
+  expectEntityAlreadyInUse(): void {
     const error = 'Expected new entity to be already in use';
     expect(this.selectNewBtn.disabled).toBe(true, error);
     expect(this.freeStatusWrapper.innerHTML).toContain('fa-times-circle', error);
-    expect(this.freeStatusWrapper.innerText).toContain(`The ${this.ID_FIELD} is already in use`, error);
+    expect(this.freeStatusWrapper.innerText).toContain(`CREATE.FREE_ENTRY CREATE.ALREADY_USE`, error);
   }
 }

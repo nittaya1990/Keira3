@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from 'ngx-typesafe-forms';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
-import { ToastrModule } from 'ngx-toastr';
+import { FormGroup } from '@angular/forms';
+import { ModelForm } from '@keira-shared/utils/helpers';
 import { SpellDbc } from '@keira-types/spell-dbc.type';
 import { LOCALES } from './spell-dbc-texts.model';
 
@@ -11,5 +10,5 @@ import { LOCALES } from './spell-dbc-texts.model';
 })
 export class SpellDbcTextsComponent {
   readonly LOCALES = LOCALES;
-  @Input() formGroup: FormGroup<SpellDbc>;
+  @Input() formGroup: FormGroup<ModelForm<SpellDbc>>;
 }

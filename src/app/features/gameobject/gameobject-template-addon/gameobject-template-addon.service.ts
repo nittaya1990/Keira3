@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-
 import { SingleRowEditorService } from '@keira-abstract/service/editors/single-row-editor.service';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
 import {
+  GameobjectTemplateAddon,
   GAMEOBJECT_TEMPLATE_ADDON_ID,
   GAMEOBJECT_TEMPLATE_ADDON_TABLE,
-  GameobjectTemplateAddon,
 } from '@keira-types/gameobject-template-addon.type';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { ToastrService } from 'ngx-toastr';
 import { GameobjectHandlerService } from '../gameobject-handler.service';
 
 @Injectable()
@@ -15,7 +14,7 @@ export class GameobjectTemplateAddonService extends SingleRowEditorService<Gameo
   /* istanbul ignore next */ // because of: https://github.com/gotwarlost/istanbul/issues/690
   constructor(
     protected handlerService: GameobjectHandlerService,
-    public readonly queryService: MysqlQueryService,
+    readonly queryService: MysqlQueryService,
     protected toastrService: ToastrService,
   ) {
     super(

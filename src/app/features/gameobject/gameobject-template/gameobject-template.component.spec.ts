@@ -1,38 +1,35 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
-import Spy = jasmine.Spy;
-
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { GameobjectTemplateComponent } from './gameobject-template.component';
-import { GameobjectTemplateModule } from './gameobject-template.module';
 import { RouterTestingModule } from '@angular/router/testing';
-import { GameobjectTemplateService } from './gameobject-template.service';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { FieldDefinition } from '@keira-types/general';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { GameobjectHandlerService } from '../gameobject-handler.service';
 import { SaiGameobjectHandlerService } from '../sai-gameobject-handler.service';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { GameobjectTemplateComponent } from './gameobject-template.component';
+import { GameobjectTemplateModule } from './gameobject-template.module';
+import { GameobjectTemplateService } from './gameobject-template.service';
+import Spy = jasmine.Spy;
 
 describe('GameobjectComponent', () => {
   let component: GameobjectTemplateComponent;
   let fixture: ComponentFixture<GameobjectTemplateComponent>;
   let queryService: MysqlQueryService;
-  let querySpy: Spy;
   let gameobjectTemplateService: GameobjectTemplateService;
   let getFieldSpy: Spy;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ModalModule.forRoot(), ToastrModule.forRoot(), GameobjectTemplateModule, RouterTestingModule],
-        providers: [GameobjectHandlerService, SaiGameobjectHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ModalModule.forRoot(), ToastrModule.forRoot(), GameobjectTemplateModule, RouterTestingModule, TranslateTestingModule],
+      providers: [GameobjectHandlerService, SaiGameobjectHandlerService],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     queryService = TestBed.inject(MysqlQueryService);
-    querySpy = spyOn(queryService, 'query').and.returnValue(of());
+    spyOn(queryService, 'query').and.returnValue(of());
 
     fixture = TestBed.createComponent(GameobjectTemplateComponent);
     component = fixture.componentInstance;

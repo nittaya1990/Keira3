@@ -1,22 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { EditorPageObject } from '@keira-testing/editor-page-object';
+import { CreatureTemplateAddon } from '@keira-types/creature-template-addon.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { CreatureHandlerService } from '../creature-handler.service';
+import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
 import { CreatureTemplateAddonComponent } from './creature-template-addon.component';
 import { CreatureTemplateAddonModule } from './creature-template-addon.module';
-import { EditorPageObject } from '@keira-testing/editor-page-object';
-import { CreatureHandlerService } from '../creature-handler.service';
-import { CreatureTemplateAddon } from '@keira-types/creature-template-addon.type';
-import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class CreatureTemplateAddonPage extends EditorPageObject<CreatureTemplateAddonComponent> {}
 
 describe('CreatureTemplateAddon integration tests', () => {
-  let component: CreatureTemplateAddonComponent;
   let fixture: ComponentFixture<CreatureTemplateAddonComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -26,7 +25,7 @@ describe('CreatureTemplateAddon integration tests', () => {
   const id = 1234;
   const expectedFullCreateQuery =
     'DELETE FROM `creature_template_addon` WHERE (`entry` = 1234);\n' +
-    'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `isLarge`, `auras`) VALUES\n' +
+    'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `visibilityDistanceType`, `auras`) VALUES\n' +
     "(1234, 0, 0, 0, 0, 0, 0, '');";
 
   const originalEntity = new CreatureTemplateAddon();
@@ -38,14 +37,12 @@ describe('CreatureTemplateAddon integration tests', () => {
   originalEntity.mount = 0;
   originalEntity.path_id = 123;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), CreatureTemplateAddonModule, RouterTestingModule],
-        providers: [CreatureHandlerService, SaiCreatureHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), CreatureTemplateAddonModule, RouterTestingModule, TranslateTestingModule],
+      providers: [CreatureHandlerService, SaiCreatureHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     handlerService = TestBed.inject(CreatureHandlerService);
@@ -58,7 +55,6 @@ describe('CreatureTemplateAddon integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalEntity]));
 
     fixture = TestBed.createComponent(CreatureTemplateAddonComponent);
-    component = fixture.componentInstance;
     page = new CreatureTemplateAddonPage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();
@@ -85,7 +81,7 @@ describe('CreatureTemplateAddon integration tests', () => {
     it('changing a property and executing the query should correctly work', () => {
       const expectedQuery =
         'DELETE FROM `creature_template_addon` WHERE (`entry` = 1234);\n' +
-        'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `isLarge`, `auras`) VALUES\n' +
+        'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `visibilityDistanceType`, `auras`) VALUES\n' +
         "(1234, 3, 0, 0, 0, 0, 0, '');";
       querySpy.calls.reset();
 
@@ -107,7 +103,7 @@ describe('CreatureTemplateAddon integration tests', () => {
       page.expectDiffQueryToBeEmpty();
       page.expectFullQueryToContain(
         'DELETE FROM `creature_template_addon` WHERE (`entry` = 1234);\n' +
-          'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `isLarge`, `auras`) VALUES\n' +
+          'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `visibilityDistanceType`, `auras`) VALUES\n' +
           '(1234, 123, 0, 1, 2, 3, 0, NULL);',
       );
     });
@@ -115,7 +111,7 @@ describe('CreatureTemplateAddon integration tests', () => {
     it('changing all properties and executing the query should correctly work', () => {
       const expectedQuery =
         'UPDATE `creature_template_addon` SET ' +
-        "`path_id` = 0, `mount` = 1, `bytes1` = 2, `bytes2` = 3, `emote` = 4, `isLarge` = 5, `auras` = '6' WHERE (`entry` = 1234);";
+        "`path_id` = 0, `mount` = 1, `bytes1` = 2, `bytes2` = 3, `emote` = 4, `visibilityDistanceType` = 5, `auras` = '6' WHERE (`entry` = 1234);";
       querySpy.calls.reset();
 
       page.changeAllFields(originalEntity, ['VerifiedBuild']);
@@ -131,7 +127,7 @@ describe('CreatureTemplateAddon integration tests', () => {
       page.expectDiffQueryToContain('UPDATE `creature_template_addon` SET `path_id` = 3 WHERE (`entry` = 1234);');
       page.expectFullQueryToContain(
         'DELETE FROM `creature_template_addon` WHERE (`entry` = 1234);\n' +
-          'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `isLarge`, `auras`) VALUES\n' +
+          'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `visibilityDistanceType`, `auras`) VALUES\n' +
           '(1234, 3, 0, 1, 2, 3, 0, NULL);',
       );
 
@@ -139,34 +135,31 @@ describe('CreatureTemplateAddon integration tests', () => {
       page.expectDiffQueryToContain('UPDATE `creature_template_addon` SET `path_id` = 3, `bytes1` = 2 WHERE (`entry` = 1234);');
       page.expectFullQueryToContain(
         'DELETE FROM `creature_template_addon` WHERE (`entry` = 1234);\n' +
-          'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `isLarge`, `auras`) VALUES\n' +
+          'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `visibilityDistanceType`, `auras`) VALUES\n' +
           '(1234, 3, 0, 2, 2, 3, 0, NULL);\n',
       );
     });
 
-    xit(
-      'changing a value via SingleValueSelector should correctly work',
-      waitForAsync(async () => {
-        const field = 'bytes1';
-        page.clickElement(page.getSelectorBtn(field));
+    xit('changing a value via SingleValueSelector should correctly work', waitForAsync(async () => {
+      const field = 'bytes1';
+      page.clickElement(page.getSelectorBtn(field));
 
-        await page.whenReady();
-        page.expectModalDisplayed();
+      await page.whenReady();
+      page.expectModalDisplayed();
 
-        page.clickRowOfDatatableInModal(8);
+      page.clickRowOfDatatableInModal(8);
 
-        await page.whenReady();
-        page.clickModalSelect();
-        await page.whenReady();
+      await page.whenReady();
+      page.clickModalSelect();
+      await page.whenReady();
 
-        expect(page.getInputById(field).value).toEqual('8');
-        page.expectDiffQueryToContain('UPDATE `creature_template_addon` SET `bytes1` = 8 WHERE (`entry` = 1234);');
-        page.expectFullQueryToContain(
-          'DELETE FROM `creature_template_addon` WHERE (`entry` = 1234);\n' +
-            'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `isLarge`, `auras`) VALUES\n' +
-            '(1234, 123, 0, 8, 2, 3, 0, NULL);',
-        );
-      }),
-    );
+      expect(page.getInputById(field).value).toEqual('8');
+      page.expectDiffQueryToContain('UPDATE `creature_template_addon` SET `bytes1` = 8 WHERE (`entry` = 1234);');
+      page.expectFullQueryToContain(
+        'DELETE FROM `creature_template_addon` WHERE (`entry` = 1234);\n' +
+          'INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `visibilityDistanceType`, `auras`) VALUES\n' +
+          '(1234, 123, 0, 8, 2, 3, 0, NULL);',
+      );
+    }));
   });
 });

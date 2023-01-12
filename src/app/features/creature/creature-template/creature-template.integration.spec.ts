@@ -1,22 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
-import { CreatureTemplateComponent } from './creature-template.component';
-import { CreatureTemplateModule } from './creature-template.module';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
 import { EditorPageObject } from '@keira-testing/editor-page-object';
 import { CreatureTemplate } from '@keira-types/creature-template.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { CreatureHandlerService } from '../creature-handler.service';
 import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
+import { CreatureTemplateComponent } from './creature-template.component';
+import { CreatureTemplateModule } from './creature-template.module';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class CreatureTemplatePage extends EditorPageObject<CreatureTemplateComponent> {}
 
 describe('CreatureTemplate integration tests', () => {
-  let component: CreatureTemplateComponent;
   let fixture: ComponentFixture<CreatureTemplateComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -28,27 +27,25 @@ describe('CreatureTemplate integration tests', () => {
     'DELETE FROM `creature_template` WHERE (`entry` = 1234);\n' +
     'INSERT INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, ' +
     '`KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `subname`, ' +
-    '`IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `faction`, `npcflag`, `speed_walk`, `speed_run`, `detection_range`, ' +
+    '`IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `faction`, `npcflag`, `speed_walk`, `speed_run`, `speed_swim`, `speed_flight`, `detection_range`, ' +
     '`scale`, `rank`, `dmgschool`, `DamageModifier`, `BaseAttackTime`, `RangeAttackTime`, `BaseVariance`, `RangeVariance`, ' +
     '`unit_class`, `unit_flags`, `unit_flags2`, `dynamicflags`, `family`, `trainer_type`, `trainer_spell`, `trainer_class`, ' +
     '`trainer_race`, `type`, `type_flags`, `lootid`, `pickpocketloot`, `skinloot`, `PetSpellDataId`, `VehicleId`, `mingold`, ' +
-    '`maxgold`, `AIName`, `MovementType`, `InhabitType`, `HoverHeight`, `HealthModifier`, `ManaModifier`, `ArmorModifier`, `ExperienceModifier`, ' +
+    '`maxgold`, `AIName`, `MovementType`, `HoverHeight`, `HealthModifier`, `ManaModifier`, `ArmorModifier`, `ExperienceModifier`, ' +
     '`RacialLeader`, `movementId`, `RegenHealth`, `mechanic_immune_mask`, `spell_school_immune_mask`, ' +
     '`flags_extra`, `ScriptName`, `VerifiedBuild`) VALUES\n' +
-    "(1234, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, 1, 1, 0, 0, 0, 1, 1.14286, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, " +
-    "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 0);\n";
+    "(1234, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, 1, 1, 0, 0, 0, 1, 1.14286, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, " +
+    "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 0);\n";
 
   const originalEntity = new CreatureTemplate();
   originalEntity.entry = id;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), CreatureTemplateModule, RouterTestingModule],
-        providers: [CreatureHandlerService, SaiCreatureHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), CreatureTemplateModule, RouterTestingModule, TranslateTestingModule],
+      providers: [CreatureHandlerService, SaiCreatureHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     handlerService = TestBed.inject(CreatureHandlerService);
@@ -61,7 +58,6 @@ describe('CreatureTemplate integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalEntity]));
 
     fixture = TestBed.createComponent(CreatureTemplateComponent);
-    component = fixture.componentInstance;
     page = new CreatureTemplatePage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();
@@ -81,15 +77,15 @@ describe('CreatureTemplate integration tests', () => {
         'DELETE FROM `creature_template` WHERE (`entry` = 1234);\n' +
         'INSERT INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, ' +
         '`KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `subname`, `IconName`, ' +
-        '`gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `faction`, `npcflag`, `speed_walk`, `speed_run`, `detection_range`, ' +
+        '`gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `faction`, `npcflag`, `speed_walk`, `speed_run`, `speed_swim`, `speed_flight`, `detection_range`, ' +
         '`scale`, `rank`, `dmgschool`, `DamageModifier`, `BaseAttackTime`, `RangeAttackTime`, `BaseVariance`, ' +
         '`RangeVariance`, `unit_class`, `unit_flags`, `unit_flags2`, `dynamicflags`, `family`, ' +
         '`trainer_type`, `trainer_spell`, `trainer_class`, `trainer_race`, `type`, `type_flags`, ' +
         '`lootid`, `pickpocketloot`, `skinloot`, `PetSpellDataId`, `VehicleId`, `mingold`, `maxgold`, ' +
-        '`AIName`, `MovementType`, `InhabitType`, `HoverHeight`, `HealthModifier`, `ManaModifier`, `ArmorModifier`, `ExperienceModifier`, `RacialLeader`, ' +
+        '`AIName`, `MovementType`, `HoverHeight`, `HealthModifier`, `ManaModifier`, `ArmorModifier`, `ExperienceModifier`, `RacialLeader`, ' +
         '`movementId`, `RegenHealth`, `mechanic_immune_mask`, `spell_school_immune_mask`, `flags_extra`, `ScriptName`, `VerifiedBuild`) VALUES\n' +
-        "(1234, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Shin', '', '', 0, 1, 1, 0, 0, 0, 1, 1.14286, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
-        " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 0);";
+        "(1234, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Shin', '', '', 0, 1, 1, 0, 0, 0, 1, 1.14286, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
+        " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 0);";
 
       querySpy.calls.reset();
 
@@ -126,14 +122,15 @@ describe('CreatureTemplate integration tests', () => {
         'UPDATE `creature_template` SET `difficulty_entry_2` = 1, `difficulty_entry_3` = 2, ' +
         '`KillCredit1` = 3, `KillCredit2` = 4, `modelid1` = 5, `modelid2` = 6, `modelid3` = 7, `modelid4` = 8, ' +
         "`name` = '9', `subname` = '10', `IconName` = '11', `gossip_menu_id` = 12, `minlevel` = 13, `maxlevel` = 14, " +
-        '`exp` = 15, `faction` = 16, `npcflag` = 17, `speed_walk` = 18, `speed_run` = 19, `detection_range` = 20, `scale` = 21, `rank` = 22, ' +
-        '`dmgschool` = 23, `DamageModifier` = 24, `BaseAttackTime` = 25, `RangeAttackTime` = 26, `BaseVariance` = 27, ' +
-        '`RangeVariance` = 28, `unit_class` = 29, `unit_flags` = 30, `unit_flags2` = 31, `dynamicflags` = 32, `family` = 33, ' +
-        '`trainer_type` = 34, `trainer_spell` = 35, `trainer_class` = 36, `trainer_race` = 37, `type` = 38, `type_flags` = 39, ' +
-        '`lootid` = 40, `pickpocketloot` = 41, `skinloot` = 42, `PetSpellDataId` = 43, `VehicleId` = 44, ' +
-        "`mingold` = 45, `maxgold` = 46, `AIName` = '47', `MovementType` = 48, `InhabitType` = 49, `HoverHeight` = 50, " +
-        '`HealthModifier` = 51, `ManaModifier` = 52, `ArmorModifier` = 53, `ExperienceModifier` = 54, `RacialLeader` = 55, `movementId` = 56, `RegenHealth` = 57, ' +
-        "`mechanic_immune_mask` = 58, `spell_school_immune_mask` = 59, `flags_extra` = 60, `ScriptName` = '61' WHERE (`entry` = 1234);";
+        '`exp` = 15, `faction` = 16, `npcflag` = 17, `speed_walk` = 18, `speed_run` = 19, `speed_swim` = 20, `speed_flight` = 21, ' +
+        '`detection_range` = 22, `scale` = 23, `rank` = 24, ' +
+        '`dmgschool` = 25, `DamageModifier` = 26, `BaseAttackTime` = 27, `RangeAttackTime` = 28, `BaseVariance` = 29, ' +
+        '`RangeVariance` = 30, `unit_class` = 31, `unit_flags` = 32, `unit_flags2` = 33, `dynamicflags` = 34, `family` = 35, ' +
+        '`trainer_type` = 36, `trainer_spell` = 37, `trainer_class` = 38, `trainer_race` = 39, `type` = 40, `type_flags` = 41, ' +
+        '`lootid` = 42, `pickpocketloot` = 43, `skinloot` = 44, `PetSpellDataId` = 45, `VehicleId` = 46, ' +
+        "`mingold` = 47, `maxgold` = 48, `AIName` = '49', `MovementType` = 50, `HoverHeight` = 51, " +
+        '`HealthModifier` = 52, `ManaModifier` = 53, `ArmorModifier` = 54, `ExperienceModifier` = 55, `RacialLeader` = 56, `movementId` = 57, `RegenHealth` = 58, ' +
+        "`mechanic_immune_mask` = 59, `spell_school_immune_mask` = 60, `flags_extra` = 61, `ScriptName` = '62' WHERE (`entry` = 1234);";
 
       querySpy.calls.reset();
 
@@ -158,29 +155,26 @@ describe('CreatureTemplate integration tests', () => {
       page.expectFullQueryToContain('AC Developer');
     });
 
-    xit(
-      'changing a value via FlagsSelector should correctly work',
-      waitForAsync(async () => {
-        const field = 'unit_flags';
-        page.clickElement(page.getSelectorBtn(field));
-        page.expectModalDisplayed();
-        await page.whenReady();
+    xit('changing a value via FlagsSelector should correctly work', waitForAsync(async () => {
+      const field = 'unit_flags';
+      page.clickElement(page.getSelectorBtn(field));
+      page.expectModalDisplayed();
+      await page.whenReady();
 
-        page.toggleFlagInRowExternal(2);
+      page.toggleFlagInRowExternal(2);
 
-        await page.whenReady();
-        page.toggleFlagInRowExternal(12);
+      await page.whenReady();
+      page.toggleFlagInRowExternal(12);
 
-        await page.whenReady();
-        page.clickModalSelect();
-        await page.whenReady();
+      await page.whenReady();
+      page.clickModalSelect();
+      await page.whenReady();
 
-        expect(page.getInputById(field).value).toEqual('4100');
-        page.expectDiffQueryToContain('UPDATE `creature_template` SET `unit_flags` = 4100 WHERE (`entry` = 1234);');
+      expect(page.getInputById(field).value).toEqual('4100');
+      page.expectDiffQueryToContain('UPDATE `creature_template` SET `unit_flags` = 4100 WHERE (`entry` = 1234);');
 
-        // Note: full query check has been shortened here because the table is too big, don't do this in other tests unless necessary
-        page.expectFullQueryToContain('4100');
-      }),
-    );
+      // Note: full query check has been shortened here because the table is too big, don't do this in other tests unless necessary
+      page.expectFullQueryToContain('4100');
+    }));
   });
 });

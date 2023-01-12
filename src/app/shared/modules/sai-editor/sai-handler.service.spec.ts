@@ -1,14 +1,13 @@
 /*eslint camelcase: ["error", {properties: "never"}]*/
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MockedMysqlQueryService } from '@keira-testing/mocks';
+import { of } from 'rxjs';
 import { instance } from 'ts-mockito';
-
-import { SaiHandlerService } from './sai-handler.service';
 import { MysqlQueryService } from '../../services/mysql-query.service';
 import { SAI_TYPES } from '../../types/smart-scripts.type';
-import { MockedMysqlQueryService } from '@keira-testing/mocks';
+import { SaiHandlerService } from './sai-handler.service';
 
 describe('SaiHandlerService', () => {
   beforeEach(() =>
@@ -119,7 +118,7 @@ describe('SaiHandlerService', () => {
         name: mockName,
         returnValue: [{ name: mockName }],
         expectedName: mockName,
-        expectedQuery: 'SELECT ct.name FROM creature_template AS ct INNER JOIN creature AS c ON c.id = ct.entry WHERE c.guid = 123',
+        expectedQuery: 'SELECT ct.name FROM creature_template AS ct INNER JOIN creature AS c ON c.id1 = ct.entry WHERE c.guid = 123',
       },
       {
         testId: 3,
@@ -137,7 +136,7 @@ describe('SaiHandlerService', () => {
         name: mockName,
         returnValue: [{ name: mockName }],
         expectedName: mockName,
-        expectedQuery: 'SELECT ct.name FROM gameobject_template AS ct INNER JOIN gameobject AS c ON c.id = ct.entry WHERE c.guid = 123',
+        expectedQuery: 'SELECT ct.name FROM gameobject_template AS ct INNER JOIN gameobject AS c ON c.id1 = ct.entry WHERE c.guid = 123',
       },
       {
         testId: 5,

@@ -1,9 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MysqlError } from 'mysql';
-
-import { TableRow } from '../../types/general';
-import { MysqlQueryService } from '../../services/mysql-query.service';
+import { QueryError } from 'mysql2';
 import { HandlerService } from '../../abstract/service/handlers/handler.service';
+import { MysqlQueryService } from '../../services/mysql-query.service';
+import { TableRow } from '../../types/general';
 import { SubscriptionHandler } from '../../utils/subscription-handler/subscription-handler';
 
 @Component({
@@ -40,7 +39,7 @@ export class CreateComponent<T extends TableRow> extends SubscriptionHandler imp
           this.isIdFree = data.length <= 0;
           this._loading = false;
         },
-        error: (error: MysqlError) => {
+        error: (error: QueryError) => {
           console.error(error);
           this._loading = false;
         },
@@ -58,7 +57,7 @@ export class CreateComponent<T extends TableRow> extends SubscriptionHandler imp
           this.isIdFree = true;
           this._loading = false;
         },
-        error: (error: MysqlError) => {
+        error: (error: QueryError) => {
           console.error(error);
           this._loading = false;
         },

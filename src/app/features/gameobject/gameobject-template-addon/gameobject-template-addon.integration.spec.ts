@@ -1,22 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
-import { GameobjectTemplateAddonComponent } from './gameobject-template-addon.component';
-import { GameobjectTemplateAddonModule } from './gameobject-template-addon.module';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { EditorPageObject } from '@keira-testing/editor-page-object';
 import { GameobjectTemplateAddon } from '@keira-types/gameobject-template-addon.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { GameobjectHandlerService } from '../gameobject-handler.service';
 import { SaiGameobjectHandlerService } from '../sai-gameobject-handler.service';
+import { GameobjectTemplateAddonComponent } from './gameobject-template-addon.component';
+import { GameobjectTemplateAddonModule } from './gameobject-template-addon.module';
+import Spy = jasmine.Spy;
 
 class GameobjectTemplateAddonPage extends EditorPageObject<GameobjectTemplateAddonComponent> {}
 
 describe('GameobjectTemplateAddon integration tests', () => {
-  let component: GameobjectTemplateAddonComponent;
   let fixture: ComponentFixture<GameobjectTemplateAddonComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -28,22 +27,20 @@ describe('GameobjectTemplateAddon integration tests', () => {
     'DELETE FROM `gameobject_template_addon` WHERE (`entry` = ' +
     id +
     ');\n' +
-    'INSERT INTO `gameobject_template_addon` (`entry`, `faction`, `flags`, `mingold`, `maxgold`) VALUES\n' +
+    'INSERT INTO `gameobject_template_addon` (`entry`, `faction`, `flags`, `mingold`, `maxgold`, `artkit0`, `artkit1`, `artkit2`, `artkit3`) VALUES\n' +
     '(' +
     id +
-    ', 0, 0, 0, 0);';
+    ', 0, 0, 0, 0, 0, 0, 0, 0);';
 
   const originalEntity = new GameobjectTemplateAddon();
   originalEntity.entry = id;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), GameobjectTemplateAddonModule, RouterTestingModule],
-        providers: [GameobjectHandlerService, SaiGameobjectHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), GameobjectTemplateAddonModule, RouterTestingModule, TranslateTestingModule],
+      providers: [GameobjectHandlerService, SaiGameobjectHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     handlerService = TestBed.inject(GameobjectHandlerService);
@@ -56,7 +53,6 @@ describe('GameobjectTemplateAddon integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalEntity]));
 
     fixture = TestBed.createComponent(GameobjectTemplateAddonComponent);
-    component = fixture.componentInstance;
     page = new GameobjectTemplateAddonPage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();
@@ -85,10 +81,10 @@ describe('GameobjectTemplateAddon integration tests', () => {
         'DELETE FROM `gameobject_template_addon` WHERE (`entry` = ' +
         id +
         ');\n' +
-        'INSERT INTO `gameobject_template_addon` (`entry`, `faction`, `flags`, `mingold`, `maxgold`) VALUES\n' +
+        'INSERT INTO `gameobject_template_addon` (`entry`, `faction`, `flags`, `mingold`, `maxgold`, `artkit0`, `artkit1`, `artkit2`, `artkit3`) VALUES\n' +
         '(' +
         id +
-        ', 35, 0, 0, 0);';
+        ', 35, 0, 0, 0, 0, 0, 0, 0);';
 
       querySpy.calls.reset();
 
@@ -113,7 +109,10 @@ describe('GameobjectTemplateAddon integration tests', () => {
 
     it('changing all properties and executing the query should correctly work', () => {
       const expectedQuery =
-        'UPDATE `gameobject_template_addon` SET ' + '`flags` = 1, `mingold` = 2, `maxgold` = 3 WHERE (`entry` = ' + id + ');';
+        'UPDATE `gameobject_template_addon` SET ' +
+        '`flags` = 1, `mingold` = 2, `maxgold` = 3, `artkit0` = 4, `artkit1` = 5, `artkit2` = 6, `artkit3` = 7 WHERE (`entry` = ' +
+        id +
+        ');';
 
       querySpy.calls.reset();
 
@@ -131,34 +130,31 @@ describe('GameobjectTemplateAddon integration tests', () => {
       page.expectFullQueryToContain('35');
     });
 
-    xit(
-      'changing a value via FlagsSelector should correctly work',
-      waitForAsync(async () => {
-        const field = 'flags';
-        page.clickElement(page.getSelectorBtn(field));
-        await page.whenReady();
-        page.expectModalDisplayed();
+    xit('changing a value via FlagsSelector should correctly work', waitForAsync(async () => {
+      const field = 'flags';
+      page.clickElement(page.getSelectorBtn(field));
+      await page.whenReady();
+      page.expectModalDisplayed();
 
-        page.toggleFlagInRowExternal(1); // +2^1
-        await page.whenReady();
-        page.toggleFlagInRowExternal(3); // +2^3
-        await page.whenReady();
-        page.clickModalSelect();
-        await page.whenReady();
+      page.toggleFlagInRowExternal(1); // +2^1
+      await page.whenReady();
+      page.toggleFlagInRowExternal(3); // +2^3
+      await page.whenReady();
+      page.clickModalSelect();
+      await page.whenReady();
 
-        expect(page.getInputById(field).value).toEqual('10');
-        page.expectDiffQueryToContain('UPDATE `gameobject_template_addon` SET `flags` = 10 WHERE (`entry` = ' + id + ');');
+      expect(page.getInputById(field).value).toEqual('10');
+      page.expectDiffQueryToContain('UPDATE `gameobject_template_addon` SET `flags` = 10 WHERE (`entry` = ' + id + ');');
 
-        page.expectFullQueryToContain(
-          'DELETE FROM `gameobject_template_addon` WHERE (`entry` = ' +
-            id +
-            ');\n' +
-            'INSERT INTO `gameobject_template_addon` (`entry`, `faction`, `flags`, `mingold`, `maxgold`) VALUES\n' +
-            '(' +
-            id +
-            ', 0, 10, 0, 0);',
-        );
-      }),
-    );
+      page.expectFullQueryToContain(
+        'DELETE FROM `gameobject_template_addon` WHERE (`entry` = ' +
+          id +
+          ');\n' +
+          'INSERT INTO `gameobject_template_addon` (`entry`, `faction`, `flags`, `mingold`, `maxgold`, `artkit0`, `artkit1`, `artkit2`, `artkit3`) VALUES\n' +
+          '(' +
+          id +
+          ', 0, 10, 0, 0, 0, 0, 0, 0);',
+      );
+    }));
   });
 });

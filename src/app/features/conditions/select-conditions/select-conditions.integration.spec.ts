@@ -1,72 +1,64 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { RouterTestingModule } from '@angular/router/testing';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { SelectConditionsComponent } from './select-conditions.component';
-import { ConditionsSearchService } from '@keira-shared/modules/search/conditions-search.service';
-import { SelectConditionsModule } from './select-conditions.module';
 import { PageObject } from '@keira-testing/page-object';
 import { Conditions } from '@keira-types/conditions.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { ConditionsHandlerService } from '../conditions-handler.service';
+import { SelectConditionsComponent } from './select-conditions.component';
+import { SelectConditionsModule } from './select-conditions.module';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class SelectConditionsComponentPage extends PageObject<SelectConditionsComponent> {
-  get searchIdSelect() {
+  get searchIdSelect(): HTMLInputElement {
     return this.query<HTMLInputElement>('select#SourceTypeOrReferenceId');
   }
-  get searchGroupInput() {
+  get searchGroupInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('input#SourceGroup');
   }
-  get searchEntryInput() {
+  get searchEntryInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('input#SourceEntry');
   }
-  get searchLimitInput() {
+  get searchLimitInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('input#limit');
   }
-  get searchBtn() {
+  get searchBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#search-btn');
   }
-  get createBtn() {
+  get createBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#create-new-btn');
   }
 
-  get topBar() {
+  get topBar(): HTMLElement {
     return this.query<HTMLElement>('keira-top-bar');
   }
 }
 
 describe('SelectConditions integration tests', () => {
-  let component: SelectConditionsComponent;
   let fixture: ComponentFixture<SelectConditionsComponent>;
-  let selectService: ConditionsSearchService;
   let page: SelectConditionsComponentPage;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
   let navigateSpy: Spy;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SelectConditionsModule, RouterTestingModule],
-        providers: [ConditionsHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SelectConditionsModule, RouterTestingModule, TranslateTestingModule],
+      providers: [ConditionsHandlerService],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     navigateSpy = spyOn(TestBed.inject(Router), 'navigate');
     queryService = TestBed.inject(MysqlQueryService);
     querySpy = spyOn(queryService, 'query').and.returnValue(of([{ max: 1 }]));
 
-    selectService = TestBed.inject(ConditionsSearchService);
-
     fixture = TestBed.createComponent(SelectConditionsComponent);
     page = new SelectConditionsComponentPage(fixture);
-    component = fixture.componentInstance;
     fixture.autoDetectChanges(true);
     fixture.detectChanges();
   });

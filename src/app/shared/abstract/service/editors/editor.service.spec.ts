@@ -1,19 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { instance } from 'ts-mockito';
+import { MockEntity, MockSingleRowEditorService } from '@keira-testing/mock-services';
+import { MockedMysqlQueryService, MockedToastrService } from '@keira-testing/mocks';
+import { QueryError } from 'mysql2';
 import { ToastrService } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
-import { MysqlError } from 'mysql';
-import Spy = jasmine.Spy;
-
+import { instance } from 'ts-mockito';
 import { MysqlQueryService } from '../../../services/mysql-query.service';
-import { MockedMysqlQueryService, MockedToastrService } from '@keira-testing/mocks';
-import { MockSingleRowEditorService, MockEntity } from '@keira-testing/mock-services';
 import { EditorService } from './editor.service';
+import Spy = jasmine.Spy;
 
 describe('EditorService', () => {
   let service: EditorService<MockEntity>;
-  const error = { code: 'some error', errno: 1234 } as MysqlError;
+  const error = { code: 'some error', errno: 1234 } as QueryError;
 
   beforeEach(() =>
     TestBed.configureTestingModule({
@@ -49,7 +48,7 @@ describe('EditorService', () => {
     });
 
     it('should behave correctly when the query succeeds', () => {
-      service['_error'] = { code: 'some previous error', errno: 123 } as MysqlError;
+      service['_error'] = { code: 'some previous error', errno: 123 } as QueryError;
       service['_fullQuery'] = '-- some previous query';
       service['_diffQuery'] = '-- some previous query';
       selectAllSpy.and.returnValue(of(data));
@@ -113,7 +112,7 @@ describe('EditorService', () => {
     });
 
     it('should correctly work when the query succeeds', () => {
-      service['_error'] = { code: 'some previous error', errno: 123 } as MysqlError;
+      service['_error'] = { code: 'some previous error', errno: 123 } as QueryError;
       querySpy.and.returnValue(of('mock result'));
 
       service.save(query);

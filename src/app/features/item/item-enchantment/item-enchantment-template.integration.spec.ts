@@ -1,21 +1,20 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { ItemEnchantmentTemplate } from '@keira-types/item-enchantment-template.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { ItemHandlerService } from '../item-handler.service';
 import { ItemEnchantmentTemplateComponent } from './item-enchantment-template.component';
 import { ItemEnchantmentTemplateModule } from './item-enchantment-template.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { ItemEnchantmentTemplate } from '@keira-types/item-enchantment-template.type';
-import { ItemHandlerService } from '../item-handler.service';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class ItemEnchantmentTemplatePage extends MultiRowEditorPageObject<ItemEnchantmentTemplateComponent> {}
 
 describe('ItemEnchantmentTemplate integration tests', () => {
-  let component: ItemEnchantmentTemplateComponent;
   let fixture: ComponentFixture<ItemEnchantmentTemplateComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -32,14 +31,19 @@ describe('ItemEnchantmentTemplate integration tests', () => {
   originalRow1.ench = 1;
   originalRow2.ench = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), ItemEnchantmentTemplateModule, RouterTestingModule, ModalModule.forRoot()],
-        providers: [ItemHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        ToastrModule.forRoot(),
+        ModalModule.forRoot(),
+        ItemEnchantmentTemplateModule,
+        RouterTestingModule,
+        ModalModule.forRoot(),
+        TranslateTestingModule,
+      ],
+      providers: [ItemHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     handlerService = TestBed.inject(ItemHandlerService);
@@ -52,7 +56,6 @@ describe('ItemEnchantmentTemplate integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalRow0, originalRow1, originalRow2]));
 
     fixture = TestBed.createComponent(ItemEnchantmentTemplateComponent);
-    component = fixture.componentInstance;
     page = new ItemEnchantmentTemplatePage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();

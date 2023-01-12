@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { MockedMysqlQueryService } from '@keira-testing/mocks';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { instance } from 'ts-mockito';
-
-import { LanguageSelectorModalComponent } from './language-selector-modal.component';
 import { MysqlQueryService } from '../../../services/mysql-query.service';
-import { MockedMysqlQueryService } from '@keira-testing/mocks';
 import { LanguageSearchService } from '../../search/language-search.service';
+import { LanguageSelectorModalComponent } from './language-selector-modal.component';
 import { LanguageSelectorModule } from './language-selector.module';
 
 describe('LanguageSelectorModalComponent', () => {
@@ -13,14 +13,12 @@ describe('LanguageSelectorModalComponent', () => {
   let fixture: ComponentFixture<LanguageSelectorModalComponent>;
   let searchService: LanguageSearchService;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [LanguageSelectorModule],
-        providers: [BsModalRef, { provide: MysqlQueryService, useValue: instance(MockedMysqlQueryService) }],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [LanguageSelectorModule, TranslateTestingModule],
+      providers: [BsModalRef, { provide: MysqlQueryService, useValue: instance(MockedMysqlQueryService) }],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     searchService = TestBed.inject(LanguageSearchService);

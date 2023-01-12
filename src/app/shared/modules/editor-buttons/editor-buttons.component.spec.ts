@@ -1,8 +1,8 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Component, ViewChild } from '@angular/core';
-
-import { EditorButtonsComponent } from './editor-buttons.component';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { PageObject } from '@keira-testing/page-object';
+import { EditorButtonsComponent } from './editor-buttons.component';
 
 @Component({
   template: `<keira-editor-buttons [editorService]="editorService"></keira-editor-buttons>`,
@@ -13,22 +13,21 @@ class TestHostComponent {
 }
 
 class EditorButtonsPage extends PageObject<TestHostComponent> {
-  get addBtn() {
+  get addBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#add-new-row-btn');
   }
-  get deleteBtn() {
+  get deleteBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#delete-selected-row-btn');
   }
 }
 
 describe('EditorButtonsComponent', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [EditorButtonsComponent, TestHostComponent],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [TranslateTestingModule],
+      declarations: [EditorButtonsComponent, TestHostComponent],
+    }).compileComponents();
+  }));
 
   const setup = () => {
     const editorService = {

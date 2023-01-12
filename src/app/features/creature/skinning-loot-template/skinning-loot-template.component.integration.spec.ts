@@ -1,23 +1,22 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { SkinningLootTemplate } from '@keira-types/skinning-loot-template.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { CreatureHandlerService } from '../creature-handler.service';
+import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
 import { SkinningLootTemplateComponent } from './skinning-loot-template.component';
 import { SkinningLootTemplateModule } from './skinning-loot-template.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { SkinningLootTemplate } from '@keira-types/skinning-loot-template.type';
-import { CreatureHandlerService } from '../creature-handler.service';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
 import { SkinningLootTemplateService } from './skinning-loot-template.service';
-import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class SkinningLootTemplatePage extends MultiRowEditorPageObject<SkinningLootTemplateComponent> {}
 
 describe('SkinningLootTemplate integration tests', () => {
-  let component: SkinningLootTemplateComponent;
   let fixture: ComponentFixture<SkinningLootTemplateComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -34,14 +33,12 @@ describe('SkinningLootTemplate integration tests', () => {
   originalRow1.Item = 1;
   originalRow2.Item = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SkinningLootTemplateModule, RouterTestingModule],
-        providers: [CreatureHandlerService, SaiCreatureHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SkinningLootTemplateModule, RouterTestingModule, TranslateTestingModule],
+      providers: [CreatureHandlerService, SaiCreatureHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean, lootId = id) {
     spyOn(TestBed.inject(SkinningLootTemplateService), 'getLootId').and.returnValue(of([{ lootId }]));
@@ -53,11 +50,9 @@ describe('SkinningLootTemplate integration tests', () => {
     queryService = TestBed.inject(MysqlQueryService);
     querySpy = spyOn(queryService, 'query').and.returnValue(of([]));
     spyOn(queryService, 'queryValue').and.returnValue(of());
-
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalRow0, originalRow1, originalRow2]));
 
     fixture = TestBed.createComponent(SkinningLootTemplateComponent);
-    component = fixture.componentInstance;
     page = new SkinningLootTemplatePage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();

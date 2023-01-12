@@ -1,13 +1,12 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
+import { SmartScripts } from '@keira-types/smart-scripts.type';
 import { of } from 'rxjs';
 import { instance } from 'ts-mockito';
-
-import { MysqlQueryService } from './mysql-query.service';
-import { MysqlService } from './mysql.service';
 import { MockedMysqlService } from '../testing/mocks';
 import { MaxRow, QueryForm, TableRow } from '../types/general';
 import { ConfigService } from './config.service';
-import { SmartScripts } from '@keira-types/smart-scripts.type';
+import { MysqlQueryService } from './mysql-query.service';
+import { MysqlService } from './mysql.service';
 
 interface MockRow extends TableRow {
   entry: number;
@@ -899,7 +898,7 @@ describe('MysqlQueryService', () => {
       { name: 'getCreatureNameById', query: `SELECT name AS v FROM creature_template WHERE entry = ${id}` },
       {
         name: 'getCreatureNameByGuid',
-        query: `SELECT name AS v FROM creature_template AS ct INNER JOIN creature AS c ON ct.entry = c.id WHERE c.guid = ${guid}`,
+        query: `SELECT name AS v FROM creature_template AS ct INNER JOIN creature AS c ON ct.entry = c.id1 WHERE c.guid = ${guid}`,
       },
       { name: 'getGameObjectNameById', query: `SELECT name AS v FROM gameobject_template WHERE entry = ${id}` },
       {

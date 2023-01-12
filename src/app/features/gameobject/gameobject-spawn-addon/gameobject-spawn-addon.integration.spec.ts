@@ -1,17 +1,17 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
+import { GameobjectSpawnAddon } from '@keira-types/gameobject-spawn-addon.type';
 import { ModalModule } from 'ngx-bootstrap/modal';
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { GameobjectHandlerService } from '../gameobject-handler.service';
+import { SaiGameobjectHandlerService } from '../sai-gameobject-handler.service';
 import { GameobjectSpawnAddonComponent } from './gameobject-spawn-addon.component';
 import { GameobjectSpawnAddonModule } from './gameobject-spawn-addon.module';
-import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { GameobjectSpawnAddon } from '@keira-types/gameobject-spawn-addon.type';
-import { GameobjectHandlerService } from '../gameobject-handler.service';
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
 import { GameobjectSpawnAddonService } from './gameobject-spawn-addon.service';
-import { SaiGameobjectHandlerService } from '../sai-gameobject-handler.service';
 
 class GameobjectSpawnAddonPage extends MultiRowEditorPageObject<GameobjectSpawnAddonComponent> {}
 
@@ -25,14 +25,12 @@ describe('GameobjectSpawnAddon integration tests', () => {
   originalRow1.guid = 1;
   originalRow2.guid = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), GameobjectSpawnAddonModule, RouterTestingModule],
-        providers: [GameobjectHandlerService, SaiGameobjectHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), GameobjectSpawnAddonModule, RouterTestingModule, TranslateTestingModule],
+      providers: [GameobjectHandlerService, SaiGameobjectHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     const handlerService = TestBed.inject(GameobjectHandlerService);

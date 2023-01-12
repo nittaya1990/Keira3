@@ -1,84 +1,84 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
+import { SAI_ACTIONS } from '@keira-shared/modules/sai-editor/constants/sai-actions';
+import { SAI_EVENTS } from '@keira-shared/modules/sai-editor/constants/sai-event';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { MysqlQueryService } from '../../services/mysql-query.service';
+import { MultiRowEditorPageObject } from '../../testing/multi-row-editor-page-object';
+import { SAI_TYPES, SmartScripts } from '../../types/smart-scripts.type';
 import { SaiEditorComponent } from './sai-editor.component';
 import { SaiEditorModule } from './sai-editor.module';
 import { SaiHandlerService } from './sai-handler.service';
-import { MultiRowEditorPageObject } from '../../testing/multi-row-editor-page-object';
-import { SAI_TYPES, SmartScripts } from '../../types/smart-scripts.type';
-import { MysqlQueryService } from '../../services/mysql-query.service';
-import { SAI_EVENTS } from '@keira-shared/modules/sai-editor/constants/sai-event';
-import { SAI_ACTIONS } from '@keira-shared/modules/sai-editor/constants/sai-actions';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class SaiEditorPage extends MultiRowEditorPageObject<SaiEditorComponent> {
-  get event1Name() {
+  get event1Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-event-param1');
   }
-  get event2Name() {
+  get event2Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-event-param2');
   }
-  get event3Name() {
+  get event3Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-event-param3');
   }
-  get event4Name() {
+  get event4Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-event-param4');
   }
-  get event5Name() {
+  get event5Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-event-param5');
   }
-  get action1Name() {
+  get action1Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-action-param1');
   }
-  get action2Name() {
+  get action2Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-action-param2');
   }
-  get action3Name() {
+  get action3Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-action-param3');
   }
-  get action4Name() {
+  get action4Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-action-param4');
   }
-  get action5Name() {
+  get action5Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-action-param5');
   }
-  get action6Name() {
+  get action6Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-action-param6');
   }
-  get target1Name() {
+  get target1Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-target-param1');
   }
-  get target2Name() {
+  get target2Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-target-param2');
   }
-  get target3Name() {
+  get target3Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-target-param3');
   }
-  get target4Name() {
+  get target4Name(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-target-param4');
   }
-  get targetXName() {
+  get targetXName(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-target-x');
   }
-  get targetYName() {
+  get targetYName(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-target-y');
   }
-  get targetZName() {
+  get targetZName(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-target-z');
   }
-  get targetOName() {
+  get targetOName(): HTMLLabelElement {
     return this.query<HTMLLabelElement>('label#label-target-o');
   }
-  get errors() {
+  get errors(): HTMLElement {
     return this.query<HTMLElement>('#errors');
   }
-  get eventType() {
+  get eventType(): HTMLInputElement {
     return this.getInputById('event_type');
   }
-  get generateCommentsBtn() {
+  get generateCommentsBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#generate-comments-btn');
   }
 }
@@ -103,13 +103,11 @@ describe('SaiEditorComponent integration tests', () => {
   originalRow1.id = 1;
   originalRow2.id = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SaiEditorModule, RouterTestingModule],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SaiEditorModule, RouterTestingModule, TranslateTestingModule],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean, hasTemplateQuery = false, st = sourceType) {
     const selected = { source_type: st, entryorguid: id };
@@ -447,47 +445,44 @@ describe('SaiEditorComponent integration tests', () => {
       );
     });
 
-    xit(
-      'changing a value via FlagsSelector should correctly work',
-      waitForAsync(async () => {
-        const field = 'event_flags';
-        page.clickRowOfDatatable(0);
-        await page.whenReady();
-        page.clickElement(page.getSelectorBtn(field));
-        await page.whenReady();
-        page.expectModalDisplayed();
+    xit('changing a value via FlagsSelector should correctly work', waitForAsync(async () => {
+      const field = 'event_flags';
+      page.clickRowOfDatatable(0);
+      await page.whenReady();
+      page.clickElement(page.getSelectorBtn(field));
+      await page.whenReady();
+      page.expectModalDisplayed();
 
-        page.toggleFlagInRowExternal(1); // +2^1
-        await page.whenReady();
-        page.toggleFlagInRowExternal(3); // +2^3
-        await page.whenReady();
-        page.clickModalSelect();
-        await page.whenReady();
+      page.toggleFlagInRowExternal(1); // +2^1
+      await page.whenReady();
+      page.toggleFlagInRowExternal(3); // +2^3
+      await page.whenReady();
+      page.clickModalSelect();
+      await page.whenReady();
 
-        expect(page.getInputById(field).value).toEqual('10');
-        page.expectDiffQueryToContain(
-          'DELETE FROM `smart_scripts` WHERE (`entryorguid` = 1234) AND (`source_type` = 0) AND (`id` IN (0));\n' +
-            'INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, ' +
-            '`event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `event_param5`, ' +
-            '`action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, ' +
-            '`target_type`, `target_param1`, `target_param2`, `target_param3`, `target_param4`, ' +
-            '`target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\n' +
-            "(1234, 0, 0, 0, 0, 0, 100, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '');",
-        );
+      expect(page.getInputById(field).value).toEqual('10');
+      page.expectDiffQueryToContain(
+        'DELETE FROM `smart_scripts` WHERE (`entryorguid` = 1234) AND (`source_type` = 0) AND (`id` IN (0));\n' +
+          'INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, ' +
+          '`event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `event_param5`, ' +
+          '`action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, ' +
+          '`target_type`, `target_param1`, `target_param2`, `target_param3`, `target_param4`, ' +
+          '`target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\n' +
+          "(1234, 0, 0, 0, 0, 0, 100, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '');",
+      );
 
-        page.expectFullQueryToContain(
-          'DELETE FROM `smart_scripts` WHERE (`source_type` = 0 AND `entryorguid` = 1234);\n' +
-            'INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, ' +
-            '`event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `event_param5`, ' +
-            '`action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, ' +
-            '`target_type`, `target_param1`, `target_param2`, `target_param3`, `target_param4`, ' +
-            '`target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\n' +
-            "(1234, 0, 0, 0, 0, 0, 100, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ''),\n" +
-            "(1234, 0, 1, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ''),\n" +
-            "(1234, 0, 2, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '');\n",
-        );
-      }),
-    );
+      page.expectFullQueryToContain(
+        'DELETE FROM `smart_scripts` WHERE (`source_type` = 0 AND `entryorguid` = 1234);\n' +
+          'INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, ' +
+          '`event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `event_param5`, ' +
+          '`action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, ' +
+          '`target_type`, `target_param1`, `target_param2`, `target_param3`, `target_param4`, ' +
+          '`target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\n' +
+          "(1234, 0, 0, 0, 0, 0, 100, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ''),\n" +
+          "(1234, 0, 1, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ''),\n" +
+          "(1234, 0, 2, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '');\n",
+      );
+    }));
 
     it('shows error on wrong linked event', () => {
       const mockRows: Partial<SmartScripts>[] = [

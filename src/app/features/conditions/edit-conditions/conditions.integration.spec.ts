@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
-import { ConditionsComponent } from './conditions.component';
-import { ConditionsEditorModule } from './conditions-editor.module';
+import { RouterTestingModule } from '@angular/router/testing';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { EditorPageObject } from '@keira-testing/editor-page-object';
 import { Conditions } from '@keira-types/conditions.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { ConditionsHandlerService } from '../conditions-handler.service';
+import { ConditionsEditorModule } from './conditions-editor.module';
+import { ConditionsComponent } from './conditions.component';
+import Spy = jasmine.Spy;
 
 class ConditionsPage extends EditorPageObject<ConditionsComponent> {
   getQuestStateFlagSelector(assert = true) {
@@ -23,13 +23,11 @@ class ConditionsPage extends EditorPageObject<ConditionsComponent> {
 }
 
 describe('Conditions integration tests', () => {
-  let component: ConditionsComponent;
   let fixture: ComponentFixture<ConditionsComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
   let handlerService: ConditionsHandlerService;
   let page: ConditionsPage;
-  let navigateSpy: Spy;
 
   const sourceTypeOrReferenceId = 1;
   const sourceGroup = 2;
@@ -64,17 +62,15 @@ describe('Conditions integration tests', () => {
   originalEntity.SourceGroup = sourceGroup;
   originalEntity.SourceEntry = sourceEntry;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), ConditionsEditorModule, RouterTestingModule],
-        providers: [ConditionsHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), ConditionsEditorModule, RouterTestingModule, TranslateTestingModule],
+      providers: [ConditionsHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
-    navigateSpy = spyOn(TestBed.inject(Router), 'navigate');
+    spyOn(TestBed.inject(Router), 'navigate');
     handlerService = TestBed.inject(ConditionsHandlerService);
     handlerService['_selected'] = JSON.stringify(id);
     handlerService.isNew = creatingNew;
@@ -85,7 +81,6 @@ describe('Conditions integration tests', () => {
     spyOn(queryService, 'selectAllMultipleKeys').and.returnValue(of(creatingNew ? [] : [originalEntity]));
 
     fixture = TestBed.createComponent(ConditionsComponent);
-    component = fixture.componentInstance;
     page = new ConditionsPage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();

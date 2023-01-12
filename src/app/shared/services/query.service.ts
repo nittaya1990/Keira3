@@ -1,9 +1,8 @@
-import { Observable, map } from 'rxjs';
+import { squelConfig } from '@keira-config/squel.config';
+import { QueryForm, TableRow } from '@keira-types/general';
+import { map, Observable } from 'rxjs';
 import { escape } from 'sqlstring';
 import * as squel from 'squel';
-
-import { QueryForm, TableRow } from '@keira-types/general';
-import { squelConfig } from '@keira-config/squel.config';
 
 export abstract class QueryService {
   protected cache: { [key: string]: Promise<string>[] } = {};
@@ -48,8 +47,8 @@ export abstract class QueryService {
 
     const filters = queryForm.fields;
 
-    for (const filter in filters) {
-      if (filters.hasOwnProperty(filter) && filters[filter] !== undefined && filters[filter] !== null) {
+    for (const filter of Object.keys(filters)) {
+      if (filters[filter] !== undefined && filters[filter] !== null) {
         const value = escape(`%${filters[filter]}%`);
 
         query.where(`\`${filter}\` LIKE ${value}`);

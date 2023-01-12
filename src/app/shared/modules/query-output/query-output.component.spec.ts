@@ -1,18 +1,17 @@
+import { Component, ViewChild } from '@angular/core';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { ClipboardService } from 'ngx-clipboard';
+import { BrowserModule } from '@angular/platform-browser';
+import { HighlightjsWrapperModule } from '@keira-shared/modules/highlightjs-wrapper/highlightjs-wrapper.module';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { BsModalService, ModalModule } from 'ngx-bootstrap/modal';
-
-import { QueryOutputComponent } from './query-output.component';
+import { ClipboardService } from 'ngx-clipboard';
+import { EditorService } from '../../abstract/service/editors/editor.service';
 import { MockType } from '../../testing/mocks';
+import { PageObject } from '../../testing/page-object';
 import { HighlightjsWrapperComponent } from '../highlightjs-wrapper/highlightjs-wrapper.component';
 import { QueryErrorComponent } from './query-error/query-error.component';
-import { EditorService } from '../../abstract/service/editors/editor.service';
-import { PageObject } from '../../testing/page-object';
-import { Component, ViewChild } from '@angular/core';
-import { closeModalsAfterEach } from '@keira-testing/test-helpers';
-import { HighlightjsWrapperModule } from '@keira-shared/modules/highlightjs-wrapper/highlightjs-wrapper.module';
+import { QueryOutputComponent } from './query-output.component';
 
 @Component({
   template: `<keira-query-output [editorService]="editorService"></keira-query-output>`,
@@ -24,27 +23,27 @@ class TestHostComponent {
 }
 
 export class QueryOutputComponentPage extends PageObject<TestHostComponent> {
-  get diffQueryWrapper() {
+  get diffQueryWrapper(): HTMLElement {
     return this.query<HTMLElement>('keira-highlightjs-wrapper#diff-query');
   }
-  get fullQueryWrapper() {
+  get fullQueryWrapper(): HTMLElement {
     return this.query<HTMLElement>('keira-highlightjs-wrapper#full-query');
   }
 
-  get diffQueryInput() {
+  get diffQueryInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('#diff-query-input');
   }
-  get fullQueryInput() {
+  get fullQueryInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('#full-query-input');
   }
 
-  get copyBtn() {
+  get copyBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#copy-btn');
   }
-  get executeBtn() {
+  get executeBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#execute-btn');
   }
-  get reloadBtn() {
+  get reloadBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#reload-btn');
   }
 
@@ -63,14 +62,12 @@ describe('QueryOutputComponent', () => {
   const diffQuery = '--diffQuery';
   const fullQuery = '--fullQuery';
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [TestHostComponent, QueryOutputComponent, HighlightjsWrapperComponent, QueryErrorComponent],
-        imports: [BrowserModule, FormsModule, HighlightjsWrapperModule, ModalModule.forRoot()],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [TestHostComponent, QueryOutputComponent, HighlightjsWrapperComponent, QueryErrorComponent],
+      imports: [BrowserModule, FormsModule, HighlightjsWrapperModule, ModalModule.forRoot(), TranslateTestingModule],
+    }).compileComponents();
+  }));
 
   const setup = () => {
     const fixture = TestBed.createComponent(TestHostComponent);

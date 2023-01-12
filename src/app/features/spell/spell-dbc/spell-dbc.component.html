@@ -1,7 +1,7 @@
 <keira-top-bar [handler]="handlerService"></keira-top-bar>
 
 <div class="container-fluid">
-  <span *ngIf="editorService.loading">Loading...</span>
+  <span *ngIf="editorService.loading" [translate]="'LOADING'"></span>
 
   <div [hidden]="!editorService.form || !editorService.loadedEntityId || editorService.loading">
     <div class="content-block">
@@ -28,6 +28,9 @@
         </tab>
         <tab heading="Texts" id="Texts">
           <keira-spell-dbc-texts [formGroup]="editorService.form"></keira-spell-dbc-texts>
+        </tab>
+        <tab heading="Misc" id="Misc">
+          <keira-spell-dbc-misc [formGroup]="editorService.form"></keira-spell-dbc-misc>
         </tab>
       </tabset>
     </div>

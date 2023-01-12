@@ -1,21 +1,20 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
-import { trigger, state, style, transition, animate } from '@angular/animations';
-import { SidebarService } from './sidebar.service';
-
-import { MysqlService } from '@keira-shared/services/mysql.service';
-import { CreatureHandlerService } from '../../../features/creature/creature-handler.service';
-import { QuestHandlerService } from '../../../features/quest/quest-handler.service';
-import { GameobjectHandlerService } from '../../../features/gameobject/gameobject-handler.service';
-import { ItemHandlerService } from '../../../features/item/item-handler.service';
-import { GossipHandlerService } from '../../../features/gossip/gossip-handler.service';
-import { ConditionsHandlerService } from '../../../features/conditions/conditions-handler.service';
 import { SaiHandlerService } from '@keira-shared/modules/sai-editor/sai-handler.service';
 import { LocationService } from '@keira-shared/services/location.service';
-import { ReferenceLootHandlerService } from '../../../features/other-loots/reference-loot/reference-loot-handler.service';
-import { SpellLootHandlerService } from '../../../features/other-loots/spell-loot/spell-loot-handler.service';
+import { MysqlService } from '@keira-shared/services/mysql.service';
+import { ConditionsHandlerService } from '../../../features/conditions/conditions-handler.service';
+import { CreatureHandlerService } from '../../../features/creature/creature-handler.service';
+import { GameobjectHandlerService } from '../../../features/gameobject/gameobject-handler.service';
+import { GossipHandlerService } from '../../../features/gossip/gossip-handler.service';
+import { ItemHandlerService } from '../../../features/item/item-handler.service';
 import { FishingLootHandlerService } from '../../../features/other-loots/fishing-loot/fishing-loot-handler.service';
 import { MailLootHandlerService } from '../../../features/other-loots/mail-loot/mail-loot-handler.service';
+import { ReferenceLootHandlerService } from '../../../features/other-loots/reference-loot/reference-loot-handler.service';
+import { SpellLootHandlerService } from '../../../features/other-loots/spell-loot/spell-loot-handler.service';
+import { QuestHandlerService } from '../../../features/quest/quest-handler.service';
 import { SpellHandlerService } from '../../../features/spell/spell-handler.service';
+import { SidebarService } from './sidebar.service';
 
 const animationTime = 200;
 
@@ -65,11 +64,11 @@ export class SidebarComponent {
     private locationService: LocationService,
   ) {}
 
-  getSideBarState() {
+  getSideBarState(): boolean {
     return this.sidebarService.getSidebarState();
   }
 
-  toggleSidebar() {
+  toggleSidebar(): void {
     this.sidebarService.setSidebarState(!this.sidebarService.getSidebarState());
 
     /* istanbul ignore next */
@@ -79,24 +78,21 @@ export class SidebarComponent {
     }, animationTime + 100);
   }
 
-  hasBackgroundImage() {
+  hasBackgroundImage(): boolean {
     return this.sidebarService.hasBackgroundImage;
   }
 
-  toggleState(key: string) {
+  toggleState(key: string): void {
     this.menuStates[key] = this.menuStates[key] === 'up' ? 'down' : 'up';
   }
 
-  collapseAll() {
-    for (const key in this.menuStates) {
-      /* istanbul ignore else */
-      if (this.menuStates.hasOwnProperty(key)) {
-        this.menuStates[key] = 'up';
-      }
+  collapseAll(): void {
+    for (const key of Object.keys(this.menuStates)) {
+      this.menuStates[key] = 'up';
     }
   }
 
-  logout() {
+  logout(): void {
     this.locationService.reload();
   }
 }

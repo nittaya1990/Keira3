@@ -1,16 +1,16 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
-import { CreatureHandlerService } from '../creature-handler.service';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
-import { SaiCreatureModule } from './sai-creature.module';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import { MultiRowEditorPageObject } from '@keira-testing/multi-row-editor-page-object';
 import { SAI_TYPES, SmartScripts } from '@keira-types/smart-scripts.type';
-import { SaiCreatureComponent } from './sai-creature.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { CreatureHandlerService } from '../creature-handler.service';
 import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
+import { SaiCreatureComponent } from './sai-creature.component';
+import { SaiCreatureModule } from './sai-creature.module';
 
 class SaiCreaturePage extends MultiRowEditorPageObject<SaiCreatureComponent> {}
 
@@ -27,14 +27,12 @@ describe('SaiCreatureComponent integration tests', () => {
   originalRow1.id = 1;
   originalRow2.id = 2;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SaiCreatureModule, RouterTestingModule],
-        providers: [CreatureHandlerService, SaiCreatureHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SaiCreatureModule, RouterTestingModule, TranslateTestingModule],
+      providers: [CreatureHandlerService, SaiCreatureHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean, hasTemplateQuery = false, st = sourceType) {
     const selected = { source_type: st, entryorguid: id };

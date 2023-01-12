@@ -1,73 +1,62 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
+import { RouterTestingModule } from '@angular/router/testing';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
 import { PageObject } from '@keira-testing/page-object';
-import { SaiSearchExistingComponent } from './sai-search-existing.component';
-import { SaiSearchService } from '@keira-shared/modules/search/sai-search.service';
-import { SaiSearchExistingModule } from './sai-search-existing.module';
 import { SmartScripts } from '@keira-types/smart-scripts.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
+import { SaiSearchExistingComponent } from './sai-search-existing.component';
+import { SaiSearchExistingModule } from './sai-search-existing.module';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class SaiSearchExistingComponentPage extends PageObject<SaiSearchExistingComponent> {
-  get searchSourceTypeSelect() {
+  get searchSourceTypeSelect(): HTMLInputElement {
     return this.query<HTMLInputElement>('select#source_type');
   }
-  get searchEntryOrGuid() {
+  get searchEntryOrGuid(): HTMLInputElement {
     return this.query<HTMLInputElement>('input#entryorguid');
   }
-  get searchLimitInput() {
+  get searchLimitInput(): HTMLInputElement {
     return this.query<HTMLInputElement>('input#limit');
   }
-  get searchBtn() {
+  get searchBtn(): HTMLButtonElement {
     return this.query<HTMLButtonElement>('#search-btn');
   }
 }
 
 describe('SaiSearchExisting integration tests', () => {
-  let component: SaiSearchExistingComponent;
   let fixture: ComponentFixture<SaiSearchExistingComponent>;
-  let selectService: SaiSearchService;
   let page: SaiSearchExistingComponentPage;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
   let navigateSpy: Spy;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SaiSearchExistingModule, RouterTestingModule],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), SaiSearchExistingModule, RouterTestingModule, TranslateTestingModule],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     navigateSpy = spyOn(TestBed.inject(Router), 'navigate');
     queryService = TestBed.inject(MysqlQueryService);
     querySpy = spyOn(queryService, 'query').and.returnValue(of([{ max: 1 }]));
 
-    selectService = TestBed.inject(SaiSearchService);
-
     fixture = TestBed.createComponent(SaiSearchExistingComponent);
     page = new SaiSearchExistingComponentPage(fixture);
-    component = fixture.componentInstance;
     fixture.autoDetectChanges(true);
     fixture.detectChanges();
   });
 
-  it(
-    'should correctly initialise',
-    waitForAsync(async () => {
-      await fixture.whenStable();
-      expect(page.queryWrapper.innerText).toContain(
-        'SELECT `entryorguid`, `source_type` FROM `smart_scripts` GROUP BY entryorguid, source_type LIMIT 50',
-      );
-    }),
-  );
+  it('should correctly initialise', waitForAsync(async () => {
+    await fixture.whenStable();
+    expect(page.queryWrapper.innerText).toContain(
+      'SELECT `entryorguid`, `source_type` FROM `smart_scripts` GROUP BY entryorguid, source_type LIMIT 50',
+    );
+  }));
 
   for (const { testId, entryorguid, source_type, limit, expectedQuery } of [
     {

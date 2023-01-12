@@ -19,12 +19,13 @@ import { ITEM_QUALITY } from '@keira-constants/options/item-quality';
 import { ITEM_SHEAT } from '@keira-constants/options/item-sheath';
 import { STAT_TYPE } from '@keira-constants/options/stat-type';
 import { TOTEM_CATEGORY } from '@keira-constants/options/totem-category';
+import { PVP_RANK } from '@keira-shared/constants/options/item-honorrank';
 import { ItemTemplate } from '@keira-types/item-template.type';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { VIEWER_TYPE } from '../../../features/model-3d-viewer/model-3d-viewer.model';
 import { ItemHandlerService } from '../item-handler.service';
 import { ItemPreviewService } from './item-preview.service';
 import { ItemTemplateService } from './item-template.service';
-import { PVP_RANK } from '@keira-shared/constants/options/item-honorrank';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'keira-item-template',
@@ -32,26 +33,27 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
   styleUrls: ['./item-template.component.scss'],
 })
 export class ItemTemplateComponent extends SingleRowEditorComponent<ItemTemplate> implements OnInit {
-  public readonly ITEM_CLASS = ITEM_CLASS;
-  public readonly ITEM_SUBCLASS = ITEM_SUBCLASS;
-  public readonly ITEM_QUALITY = ITEM_QUALITY;
-  public readonly ITEM_FLAGS = ITEM_FLAGS;
-  public readonly ITEM_FLAGS_EXTRA = ITEM_FLAGS_EXTRA;
-  public readonly INVENTORY_TYPE = INVENTORY_TYPE;
-  public readonly ALLOWABLE_CLASSES = ALLOWABLE_CLASSES;
-  public readonly ALLOWABLE_RACES = ALLOWABLE_RACES;
-  public readonly FACTION_RANK = FACTION_RANK;
-  public readonly BAG_FAMILY = BAG_FAMILY;
-  public readonly SOCKET_COLOR = SOCKET_COLOR;
-  public readonly ITEM_BONDING = ITEM_BONDING;
-  public readonly ITEM_MATERIAL = ITEM_MATERIAL;
-  public readonly ITEM_SHEAT = ITEM_SHEAT;
-  public readonly TOTEM_CATEGORY = TOTEM_CATEGORY;
-  public readonly FOOD_TYPE = FOOD_TYPE;
-  public readonly ITEM_FLAGS_CUSTOM = ITEM_FLAGS_CUSTOM;
-  public readonly DAMAGE_TYPE = DAMAGE_TYPE;
-  public readonly STAT_TYPE = STAT_TYPE;
-  public readonly PVP_RANK = PVP_RANK;
+  readonly ITEM_CLASS = ITEM_CLASS;
+  readonly ITEM_SUBCLASS = ITEM_SUBCLASS;
+  readonly ITEM_QUALITY = ITEM_QUALITY;
+  readonly ITEM_FLAGS = ITEM_FLAGS;
+  readonly ITEM_FLAGS_EXTRA = ITEM_FLAGS_EXTRA;
+  readonly INVENTORY_TYPE = INVENTORY_TYPE;
+  readonly ALLOWABLE_CLASSES = ALLOWABLE_CLASSES;
+  readonly ALLOWABLE_RACES = ALLOWABLE_RACES;
+  readonly FACTION_RANK = FACTION_RANK;
+  readonly BAG_FAMILY = BAG_FAMILY;
+  readonly SOCKET_COLOR = SOCKET_COLOR;
+  readonly ITEM_BONDING = ITEM_BONDING;
+  readonly ITEM_MATERIAL = ITEM_MATERIAL;
+  readonly ITEM_SHEAT = ITEM_SHEAT;
+  readonly TOTEM_CATEGORY = TOTEM_CATEGORY;
+  readonly FOOD_TYPE = FOOD_TYPE;
+  readonly ITEM_FLAGS_CUSTOM = ITEM_FLAGS_CUSTOM;
+  readonly DAMAGE_TYPE = DAMAGE_TYPE;
+  readonly STAT_TYPE = STAT_TYPE;
+  readonly PVP_RANK = PVP_RANK;
+  readonly ITEM_VIEWER_TYPE = VIEWER_TYPE.ITEM;
 
   showItemPreview = true;
 
@@ -67,16 +69,13 @@ export class ItemTemplateComponent extends SingleRowEditorComponent<ItemTemplate
 
   public itemPreview: SafeHtml = this.sanitizer.bypassSecurityTrustHtml('loading...');
 
-  private async loadItemPreview() {
+  private async loadItemPreview(): Promise<void> {
     this.itemPreview = this.sanitizer.bypassSecurityTrustHtml(
       await this.itemPreviewService.calculatePreview(this.editorService.form.getRawValue()),
     );
   }
 
-  ngOnInit() {
-    super.ngOnInit();
-    this.loadItemPreview();
-
+  private loadItemPreviewDynamic(): void {
     this.subscriptions.push(
       this.editorService.form.valueChanges
         .pipe(
@@ -89,5 +88,12 @@ export class ItemTemplateComponent extends SingleRowEditorComponent<ItemTemplate
         )
         .subscribe(this.loadItemPreview.bind(this)),
     );
+  }
+
+  ngOnInit(): void {
+    super.ngOnInit();
+
+    this.loadItemPreview();
+    this.loadItemPreviewDynamic();
   }
 }

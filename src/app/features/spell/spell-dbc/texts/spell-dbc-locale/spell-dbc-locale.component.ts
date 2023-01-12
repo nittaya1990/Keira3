@@ -1,9 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from 'ngx-typesafe-forms';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
-import { ToastrModule } from 'ngx-toastr';
-import { Locale, SPELL_DBC_TEXT_FIELDS, SpellDbcTextFieldPrefix } from '../spell-dbc-texts.model';
+import { FormGroup } from '@angular/forms';
+import { ModelForm } from '@keira-shared/utils/helpers';
 import { SpellDbc } from '@keira-types/spell-dbc.type';
+import { Locale, SpellDbcTextFieldPrefix, SPELL_DBC_TEXT_FIELDS } from '../spell-dbc-texts.model';
 
 @Component({
   selector: 'keira-spell-dbc-locale',
@@ -12,7 +11,7 @@ import { SpellDbc } from '@keira-types/spell-dbc.type';
 export class SpellDbcLocaleComponent {
   readonly FIELDS = SPELL_DBC_TEXT_FIELDS;
 
-  @Input() formGroup: FormGroup<SpellDbc>;
+  @Input() formGroup: FormGroup<ModelForm<SpellDbc>>;
   @Input() locale: Locale;
 
   getFieldName(field: SpellDbcTextFieldPrefix): string {

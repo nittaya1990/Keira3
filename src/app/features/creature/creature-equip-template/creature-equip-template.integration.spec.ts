@@ -1,22 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import Spy = jasmine.Spy;
-
-import { CreatureEquipTemplateComponent } from './creature-equip-template.component';
-import { CreatureEquipTemplateModule } from './creature-equip-template.module';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
 import { EditorPageObject } from '@keira-testing/editor-page-object';
 import { CreatureEquipTemplate } from '@keira-types/creature-equip-template.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { CreatureHandlerService } from '../creature-handler.service';
 import { SaiCreatureHandlerService } from '../sai-creature-handler.service';
+import { CreatureEquipTemplateComponent } from './creature-equip-template.component';
+import { CreatureEquipTemplateModule } from './creature-equip-template.module';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
+import Spy = jasmine.Spy;
 
 class CreatureEquipTemplatePage extends EditorPageObject<CreatureEquipTemplateComponent> {}
 
 describe('CreatureEquipTemplate integration tests', () => {
-  let component: CreatureEquipTemplateComponent;
   let fixture: ComponentFixture<CreatureEquipTemplateComponent>;
   let queryService: MysqlQueryService;
   let querySpy: Spy;
@@ -32,14 +31,12 @@ describe('CreatureEquipTemplate integration tests', () => {
   const originalEntity = new CreatureEquipTemplate();
   originalEntity.CreatureID = id;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), CreatureEquipTemplateModule, RouterTestingModule],
-        providers: [CreatureHandlerService, SaiCreatureHandlerService],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), CreatureEquipTemplateModule, RouterTestingModule, TranslateTestingModule],
+      providers: [CreatureHandlerService, SaiCreatureHandlerService],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     handlerService = TestBed.inject(CreatureHandlerService);
@@ -53,7 +50,6 @@ describe('CreatureEquipTemplate integration tests', () => {
     spyOn(queryService, 'selectAll').and.returnValue(of(creatingNew ? [] : [originalEntity]));
 
     fixture = TestBed.createComponent(CreatureEquipTemplateComponent);
-    component = fixture.componentInstance;
     page = new CreatureEquipTemplatePage(fixture);
     fixture.autoDetectChanges(true);
     fixture.detectChanges();
@@ -133,33 +129,30 @@ describe('CreatureEquipTemplate integration tests', () => {
       );
     });
 
-    xit(
-      'changing a value via ItemSelector should correctly work',
-      waitForAsync(async () => {
-        //  note: previously disabled because of:
-        //  https://stackoverflow.com/questions/57336982/how-to-make-angular-tests-wait-for-previous-async-operation-to-complete-before-e
+    xit('changing a value via ItemSelector should correctly work', waitForAsync(async () => {
+      //  note: previously disabled because of:
+      //  https://stackoverflow.com/questions/57336982/how-to-make-angular-tests-wait-for-previous-async-operation-to-complete-before-e
 
-        const itemEntry = 1200;
-        querySpy.and.returnValue(of([{ entry: itemEntry, name: 'Mock Item' }]));
-        const field = 'ItemID1';
-        page.clickElement(page.getSelectorBtn(field));
-        page.expectModalDisplayed();
-        await page.whenReady();
+      const itemEntry = 1200;
+      querySpy.and.returnValue(of([{ entry: itemEntry, name: 'Mock Item' }]));
+      const field = 'ItemID1';
+      page.clickElement(page.getSelectorBtn(field));
+      page.expectModalDisplayed();
+      await page.whenReady();
 
-        page.clickSearchBtn();
-        await page.whenReady();
-        page.clickRowOfDatatableInModal(0);
-        await page.whenReady();
-        page.clickModalSelect();
-        await page.whenReady();
+      page.clickSearchBtn();
+      await page.whenReady();
+      page.clickRowOfDatatableInModal(0);
+      await page.whenReady();
+      page.clickModalSelect();
+      await page.whenReady();
 
-        page.expectDiffQueryToContain('UPDATE `creature_equip_template` SET `ItemID1` = 1200 WHERE (`CreatureID` = 1234);');
-        page.expectFullQueryToContain(
-          'DELETE FROM `creature_equip_template` WHERE (`CreatureID` = 1234);\n' +
-            'INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES\n' +
-            '(1234, 1, 1200, 0, 0, 0);',
-        );
-      }),
-    );
+      page.expectDiffQueryToContain('UPDATE `creature_equip_template` SET `ItemID1` = 1200 WHERE (`CreatureID` = 1234);');
+      page.expectFullQueryToContain(
+        'DELETE FROM `creature_equip_template` WHERE (`CreatureID` = 1234);\n' +
+          'INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES\n' +
+          '(1234, 1, 1200, 0, 0, 0);',
+      );
+    }));
   });
 });

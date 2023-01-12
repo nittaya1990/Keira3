@@ -1,16 +1,16 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ToastrModule } from 'ngx-toastr';
-import { ModalModule } from 'ngx-bootstrap/modal';
-
-import { QuestTemplateComponent } from './quest-template.component';
 import { MysqlQueryService } from '@keira-shared/services/mysql-query.service';
+import { TranslateTestingModule } from '@keira-shared/testing/translate-module';
 import { EditorPageObject } from '@keira-testing/editor-page-object';
 import { QuestTemplate } from '@keira-types/quest-template.type';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ToastrModule } from 'ngx-toastr';
+import { of } from 'rxjs';
 import { QuestHandlerService } from '../quest-handler.service';
-import { QuestModule } from '../quest.module';
 import { QuestPreviewService } from '../quest-preview/quest-preview.service';
+import { QuestModule } from '../quest.module';
+import { QuestTemplateComponent } from './quest-template.component';
 
 class QuestTemplatePage extends EditorPageObject<QuestTemplateComponent> {
   get questPreviewTitle() {
@@ -43,13 +43,11 @@ describe('QuestTemplate integration tests', () => {
     '`Unknown0`, `ObjectiveText1`, `ObjectiveText2`, `ObjectiveText3`, `ObjectiveText4`, `VerifiedBuild`) VALUES\n' +
     "(1234, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', 0);";
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ToastrModule.forRoot(), ModalModule.forRoot(), RouterTestingModule, QuestModule],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ToastrModule.forRoot(), ModalModule.forRoot(), RouterTestingModule, QuestModule, TranslateTestingModule],
+    }).compileComponents();
+  }));
 
   function setup(creatingNew: boolean) {
     const originalEntity = new QuestTemplate();
@@ -188,29 +186,26 @@ describe('QuestTemplate integration tests', () => {
       page.removeElement();
     });
 
-    xit(
-      'changing a value via FlagsSelector should correctly work',
-      waitForAsync(async () => {
-        const { page } = setup(false);
-        const field = 'Flags';
-        page.clickElement(page.getSelectorBtn(field));
-        await page.whenReady();
-        page.expectModalDisplayed();
+    xit('changing a value via FlagsSelector should correctly work', waitForAsync(async () => {
+      const { page } = setup(false);
+      const field = 'Flags';
+      page.clickElement(page.getSelectorBtn(field));
+      await page.whenReady();
+      page.expectModalDisplayed();
 
-        page.toggleFlagInRowExternal(2);
-        await page.whenReady();
-        page.toggleFlagInRowExternal(12);
-        await page.whenReady();
-        page.clickModalSelect();
-        await page.whenReady();
+      page.toggleFlagInRowExternal(2);
+      await page.whenReady();
+      page.toggleFlagInRowExternal(12);
+      await page.whenReady();
+      page.clickModalSelect();
+      await page.whenReady();
 
-        expect(page.getInputById(field).value).toEqual('4100');
-        page.expectDiffQueryToContain('UPDATE `quest_template` SET `Flags` = 4100 WHERE (`ID` = 1234);');
+      expect(page.getInputById(field).value).toEqual('4100');
+      page.expectDiffQueryToContain('UPDATE `quest_template` SET `Flags` = 4100 WHERE (`ID` = 1234);');
 
-        // Note: full query check has been shortened here because the table is too big, don't do this in other tests unless necessary
-        page.expectFullQueryToContain('4100');
-        page.removeElement();
-      }),
-    );
+      // Note: full query check has been shortened here because the table is too big, don't do this in other tests unless necessary
+      page.expectFullQueryToContain('4100');
+      page.removeElement();
+    }));
   });
 });
